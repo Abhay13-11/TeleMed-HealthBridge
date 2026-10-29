@@ -542,7 +542,7 @@ const PharmacyDashboard = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">Order #ORD-2024-0142</p>
-                    <p className="text-sm text-muted-foreground">Customer: Rajesh Kumar</p>
+                    <p className="text-sm text-muted-foreground">Customer: Amarjit Singh</p>
                   </div>
                   <Badge variant="secondary">Delivered</Badge>
                 </div>

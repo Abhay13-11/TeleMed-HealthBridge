@@ -157,7 +157,7 @@ export const PrescriptionWriter: React.FC<PrescriptionWriterProps> = ({
       tests,
       advice,
       followUp,
-      doctorName: 'Dr. Rajesh Kumar',
+      doctorName: 'Dr. Rachit Kumar',
       doctorReg: 'REG12345',
       hospitalName: 'Nabha Civil Hospital'
     };

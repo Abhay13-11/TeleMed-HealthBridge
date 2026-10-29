@@ -107,7 +107,7 @@ export const MessagingProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         id: 'conv-1',
         participants: [
           { id: user.id, name: user.name, role: 'patient', isOnline: true },
-          { id: 'doc-1', name: 'Dr. Rajesh Kumar', role: 'doctor', isOnline: true }
+          { id: 'doc-1', name: 'Dr. Rachit Kumar', role: 'doctor', isOnline: true }
         ],
         lastMessage: undefined,
         unreadCount: 2,

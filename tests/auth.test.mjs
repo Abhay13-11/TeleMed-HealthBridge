@@ -44,7 +44,7 @@ const demoUsers = [
     id: '4',
     email: 'admin@demo.com',
     password: '12345',
-    name: 'Rajesh Barik',
+    name: 'Abhay Singh Chauhan',
     role: 'admin',
     location: 'Telemedicine HQ',
     phone: '+91 9876543213'

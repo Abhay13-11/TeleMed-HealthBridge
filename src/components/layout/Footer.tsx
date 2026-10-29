@@ -111,7 +111,7 @@ export const Footer: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="pt-6 border-t border-stone-800 text-xs text-stone-500 flex flex-col sm:flex-row justify-between items-center gap-3">
-          <p>© {currentYear} HealthBridge Nabha. Open Research & Development Initiative.</p>
+          <p>© {currentYear} HealthBridge Nabha. Architected & Developed by <span className="text-emerald-400 font-medium">Abhay Singh Chauhan</span>.</p>
           <p className="text-stone-400">Optimized for Low-Bandwidth Networks (2G/3G/4G)</p>
         </div>
       </div>

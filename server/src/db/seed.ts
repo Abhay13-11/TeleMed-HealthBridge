@@ -39,7 +39,7 @@ export async function seedInitialData() {
     },
     {
       id: '4',
-      name: 'Rajesh Barik',
+      name: 'Abhay Singh Chauhan',
       email: 'admin@demo.com',
       password: defaultHashedPassword,
       role: 'admin',

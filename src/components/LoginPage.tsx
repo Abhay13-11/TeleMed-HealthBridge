@@ -67,7 +67,7 @@ export const LoginPage = () => {
     { 
       role: 'Administrator', 
       email: 'admin@demo.com', 
-      name: 'Rajesh Barik (Operations)', 
+      name: 'Abhay Singh Chauhan (Lead Architect)', 
       icon: ShieldCheck, 
       color: 'bg-stone-800 text-white',
       desc: 'Operational audits, system health, aggregate platform metrics'
