@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { 
   Heart, 
   Stethoscope, 
@@ -13,17 +12,23 @@ import {
   Calendar, 
   FileText, 
   Pill, 
-  HelpCircle, 
-  CheckCircle2, 
-  AlertTriangle, 
+  Sparkles, 
   ArrowRight,
-  WifiOff,
-  Clock,
-  Sparkles,
-  MapPin,
-  Lock
+  Activity,
+  Zap,
+  Cpu,
+  Lock,
+  Globe,
+  Radio,
+  CheckCircle2,
+  AlertTriangle,
+  Layers,
+  ChevronRight
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { NeuralCanvas } from '@/components/visual/NeuralCanvas';
+import { TiltCard } from '@/components/visual/TiltCard';
+import { AiCoreOrb } from '@/components/visual/AiCoreOrb';
 import { Footer } from '@/components/layout/Footer';
 
 export const LoginPage = () => {
@@ -45,404 +50,426 @@ export const LoginPage = () => {
       email: 'patient@demo.com', 
       name: 'Krishna (Rampur Village)', 
       icon: Heart, 
-      color: 'bg-emerald-800 text-white',
-      desc: 'Book visits, check pharmacy stock, view CBC records'
+      glowColor: 'rgba(0, 242, 254, 0.4)',
+      accentBorder: 'hover:border-cyan-400/60',
+      tag: 'Rural Care Access',
+      desc: 'Instant consultation booking, offline health records, verified pharmacy medicine stock.'
     },
     { 
       role: 'Doctor', 
       email: 'doctor@demo.com', 
-      name: 'Dr. Rachit (General Medicine)', 
+      name: 'Dr. Rachit Kumar (General Medicine)', 
       icon: Stethoscope, 
-      color: 'bg-emerald-900 text-white',
-      desc: 'Triage requests, issue prescriptions, manage consultations'
+      glowColor: 'rgba(16, 185, 129, 0.4)',
+      accentBorder: 'hover:border-emerald-400/60',
+      tag: 'Clinical Command',
+      desc: 'Video teleconsultations, appointment queue triaging, verifiable digital prescriptions.'
     },
     { 
       role: 'Pharmacist', 
       email: 'pharmacy@demo.com', 
-      name: 'Rural Health Pharmacy (Nabha)', 
-      icon: Building2, 
-      color: 'bg-amber-800 text-white',
-      desc: 'Adjust stock quantities, update rack locations & batches'
+      name: 'Nabha Rural Health Pharmacy', 
+      icon: Pill, 
+      glowColor: 'rgba(139, 92, 246, 0.4)',
+      accentBorder: 'hover:border-violet-400/60',
+      tag: 'Inventory Ledger',
+      desc: 'Real-time medicine dispensing, batch tracking, stockout prevention across 173 villages.'
     },
     { 
       role: 'Administrator', 
       email: 'admin@demo.com', 
-      name: 'Abhay Singh Chauhan (Lead Architect)', 
+      name: 'Abhay Singh Chauhan (System Architect)', 
       icon: ShieldCheck, 
-      color: 'bg-stone-800 text-white',
-      desc: 'Operational audits, system health, aggregate platform metrics'
+      glowColor: 'rgba(245, 158, 11, 0.4)',
+      accentBorder: 'hover:border-amber-400/60',
+      tag: 'Core Telemetry',
+      desc: 'Live telemetry, immutable clinical audit logs, distributed healthcare provider governance.'
     },
   ];
 
-  const handleLoginSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleQuickLogin = async (demoEmail: string) => {
     setLoading(true);
-
     try {
-      if (isRegisterMode) {
-        if (!name.trim()) throw new Error('Please enter your full name.');
-        const success = await register({
-          name,
-          email,
-          password,
-          phone,
-          location: village || 'Nabha, Punjab'
-        });
-        if (success) {
-          toast({
-            title: "Registration Complete",
-            description: "Your patient account has been created. Welcome to HealthBridge!",
-          });
-        }
-      } else {
-        const success = await login(email, password);
-        if (success) {
-          toast({
-            title: "Signed In Successfully",
-            description: "Welcome to TeleMed HealthBridge Nabha.",
-          });
-        } else {
-          toast({
-            title: "Invalid Credentials", 
-            description: "Check your email and password, or click a demo account below.",
-            variant: "destructive",
-          });
-        }
-      }
-    } catch (err: unknown) {
+      await login(demoEmail, '12345');
       toast({
-        title: "Authentication Error",
-        description: err instanceof Error ? err.message : "An error occurred during authentication.",
-        variant: "destructive",
+        title: "Quantum Neural Link Established",
+        description: `Authenticated session initiated for ${demoEmail}`,
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to establish secure session";
+      toast({
+        title: "Authentication Failed",
+        description: msg,
+        variant: "destructive"
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const fillDemo = (demoEmail: string) => {
-    setIsRegisterMode(false);
-    setEmail(demoEmail);
-    setPassword('12345');
-    toast({
-      title: "Credentials Filled",
-      description: `Loaded ${demoEmail}. Click "Sign In" to proceed.`,
-    });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      toast({
+        title: "Incomplete Credentials",
+        description: "Please enter your email and password.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (isRegisterMode) {
+        if (!name) {
+          toast({
+            title: "Name Required",
+            description: "Please enter your full name to create an account.",
+            variant: "destructive"
+          });
+          setLoading(false);
+          return;
+        }
+        await register({
+          name,
+          email,
+          password,
+          role: 'patient',
+          phone,
+          location: village ? `Village ${village}, Nabha` : 'Nabha, Punjab'
+        });
+        toast({
+          title: "Account Created & Initialized",
+          description: "Welcome to HealthBridge. Your biometric profile is verified.",
+        });
+      } else {
+        await login(email, password);
+        toast({
+          title: "Session Verified",
+          description: "Welcome back to HealthBridge.",
+        });
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Security authorization failed. Please try again.";
+      toast({
+        title: isRegisterMode ? "Registration Blocked" : "Authentication Failed",
+        description: msg,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-900 font-sans flex flex-col">
-      {/* Top Banner Navigation */}
-      <header className="sticky top-0 z-40 bg-stone-900 border-b border-stone-800 text-stone-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <div className="p-2 bg-emerald-800 text-white rounded-lg">
-              <Heart className="h-5 w-5" fill="currentColor" />
+    <div className="min-h-screen bg-[#060911] text-slate-100 flex flex-col relative overflow-hidden font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+      {/* 3D Neural Particle Canvas Backdrop */}
+      <NeuralCanvas />
+
+      {/* Cybernetic Ambient Light Beams */}
+      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none -z-10" />
+      <div className="absolute top-1/3 right-10 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none -z-10" />
+      <div className="absolute bottom-10 left-1/3 w-[550px] h-[550px] bg-violet-600/10 rounded-full blur-[140px] pointer-events-none -z-10" />
+
+      {/* Futuristic Glass Top Bar */}
+      <header className="relative z-20 border-b border-white/[0.08] bg-[#070b14]/70 backdrop-blur-2xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          <div className="flex items-center space-x-3.5 group cursor-pointer">
+            <div className="relative">
+              <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 opacity-60 blur-sm group-hover:opacity-100 transition duration-300" />
+              <div className="relative p-2.5 bg-[#090f1d] border border-cyan-400/40 rounded-xl text-cyan-300 shadow-[0_0_15px_rgba(0,242,254,0.3)]">
+                <Heart className="h-5 w-5 fill-cyan-400" />
+              </div>
             </div>
             <div>
-              <span className="font-bold text-lg text-white">TeleMed</span>
-              <span className="text-xs text-emerald-400 font-medium ml-1.5 hidden sm:inline">HealthBridge Nabha</span>
+              <div className="flex items-center space-x-2">
+                <span className="font-extrabold text-xl tracking-tight text-white drop-shadow-md">HealthBridge</span>
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 tracking-wider">AI 3.0</span>
+              </div>
+              <p className="text-[11px] font-mono text-cyan-400/70 tracking-wide flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping inline-block" />
+                Nabha Telemedicine Hub • 173 Connected Nodes
+              </p>
             </div>
           </div>
-          <div className="flex items-center space-x-3 text-xs">
-            <span className="text-stone-400 hidden md:inline">Emergency Support: Dial 112 / 108</span>
-            <Button 
-              size="sm" 
-              className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs px-3.5"
-              onClick={() => {
-                const el = document.getElementById('auth-card');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
+
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md">
+              <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+              <span className="text-xs font-mono text-slate-300">Sync: <span className="text-emerald-400 font-semibold">Active</span></span>
+              <span className="text-white/20">|</span>
+              <span className="text-xs font-mono text-slate-400">Low-Bandwidth 2G/3G Engine</span>
+            </div>
+            <a 
+              href="#login-portal" 
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 border border-cyan-400/40 hover:border-cyan-300 text-cyan-300 hover:shadow-[0_0_20px_rgba(0,242,254,0.3)] transition-all duration-300 flex items-center gap-2"
             >
-              Access Platform
-            </Button>
+              <Lock className="w-3.5 h-3.5" />
+              Portal Access
+            </a>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-stone-900 via-stone-900 to-stone-800 text-white pt-16 pb-20 px-4 sm:px-6 lg:px-8 border-b border-stone-800">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-950/90 border border-emerald-800/60 text-emerald-300 text-xs font-medium">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Dedicated Rural Telemedicine • Nabha, Punjab</span>
-            </div>
+      {/* Main Hero & 3D Interactive Stage */}
+      <main className="flex-1 relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 flex flex-col justify-center">
+        {/* Top Floating Badge */}
+        <div className="flex justify-center mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0a1122]/80 border border-cyan-500/30 backdrop-blur-xl shadow-[0_0_25px_rgba(0,242,254,0.15)]"
+          >
+            <Sparkles className="w-4 h-4 text-cyan-300 animate-pulse" />
+            <span className="text-xs font-medium text-slate-200">
+              Grandmaster AI-Assisted Clinical Telemedicine System
+            </span>
+            <span className="w-1 h-1 rounded-full bg-cyan-400" />
+            <span className="text-xs font-mono text-cyan-400">Lead Architect: Abhay Singh Chauhan</span>
+          </motion.div>
+        </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-stone-100 leading-tight">
-              Bridging Nabha & 173 Rural Villages to Qualified Medical Specialists.
+        {/* Hero Title and Orb Grid */}
+        <div className="grid lg:grid-cols-12 gap-12 items-center mb-16">
+          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] text-white">
+              Intelligent Healthcare,{' '}
+              <span className="cyber-gradient-text block mt-1">
+                Zero Distance.
+              </span>
             </h1>
-
-            <p className="text-stone-300 text-sm sm:text-base leading-relaxed max-w-2xl">
-              Nabha Civil Hospital operates under significant clinical strain with a 52% doctor vacancy rate. HealthBridge connects agricultural communities and daily-wage families to remote consultations, truthful pharmacy availability, and secure clinical records without unnecessary travel.
+            <p className="text-slate-300 text-base sm:text-lg max-w-2xl leading-relaxed">
+              Bridging specialist physicians at <span className="text-cyan-300 font-medium">Nabha Civil Hospital</span> with over 173 rural gram panchayats. Features real-time AI triage, WebRTC video consultation rooms, and verifiable pharmacy stock tracking.
             </p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2 text-stone-200">
-              <div className="p-3 bg-stone-800/80 rounded-lg border border-stone-700/60">
-                <p className="text-xl font-bold text-emerald-400">173 Villages</p>
-                <p className="text-xs text-stone-400 mt-0.5">Target catchment region</p>
+            {/* Quick Metrics Bar */}
+            <div className="grid grid-cols-3 gap-3 pt-4 max-w-lg mx-auto lg:mx-0">
+              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md">
+                <p className="text-2xl font-black text-cyan-400 font-mono">173</p>
+                <p className="text-[11px] text-slate-400 uppercase tracking-wider font-mono mt-0.5">Villages Connected</p>
               </div>
-              <div className="p-3 bg-stone-800/80 rounded-lg border border-stone-700/60">
-                <p className="text-xl font-bold text-amber-400">52% Vacancy</p>
-                <p className="text-xs text-stone-400 mt-0.5">Civil Hospital staffing gap</p>
+              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md">
+                <p className="text-2xl font-black text-emerald-400 font-mono">100%</p>
+                <p className="text-[11px] text-slate-400 uppercase tracking-wider font-mono mt-0.5">Truthful Stock</p>
               </div>
-              <div className="p-3 bg-stone-800/80 rounded-lg border border-stone-700/60 col-span-2 sm:col-span-1">
-                <p className="text-xl font-bold text-stone-200">2G / 3G Ready</p>
-                <p className="text-xs text-stone-400 mt-0.5">Low-bandwidth resilience</p>
+              <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md">
+                <p className="text-2xl font-black text-violet-400 font-mono">7-State</p>
+                <p className="text-[11px] text-slate-400 uppercase tracking-wider font-mono mt-0.5">State Machine</p>
               </div>
             </div>
           </div>
 
-          {/* Interactive Login / Registration Card */}
-          <div className="lg:col-span-5" id="auth-card">
-            <Card className="bg-stone-900 border-stone-700 text-stone-100 shadow-xl">
-              <CardHeader className="pb-4">
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-lg font-bold text-stone-100">
-                    {isRegisterMode ? 'Register New Patient' : 'Sign In to HealthBridge'}
-                  </CardTitle>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-xs text-emerald-400 hover:text-emerald-300"
-                    onClick={() => setIsRegisterMode(!isRegisterMode)}
-                  >
-                    {isRegisterMode ? 'Existing User? Sign In' : 'New Patient? Register'}
-                  </Button>
-                </div>
-                <CardDescription className="text-xs text-stone-400">
-                  {isRegisterMode 
-                    ? 'Create your rural telemedicine account for consultation scheduling'
-                    : 'Select a demo account or sign in with registered credentials'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <form onSubmit={handleLoginSubmit} className="space-y-3">
-                  {isRegisterMode && (
-                    <>
-                      <div>
-                        <label className="text-xs font-medium text-stone-300">Full Name</label>
-                        <Input
-                          placeholder="e.g. Jaswinder Singh"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          className="bg-stone-950 border-stone-700 text-stone-100 text-xs mt-1"
-                          required
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="text-xs font-medium text-stone-300">Phone</label>
-                          <Input
-                            placeholder="+91 98765 00000"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            className="bg-stone-950 border-stone-700 text-stone-100 text-xs mt-1"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs font-medium text-stone-300">Village</label>
-                          <Input
-                            placeholder="e.g. Kalyan, Nabha"
-                            value={village}
-                            onChange={(e) => setVillage(e.target.value)}
-                            className="bg-stone-950 border-stone-700 text-stone-100 text-xs mt-1"
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
+          {/* 3D Holographic AI Core Orb Showcase */}
+          <div className="lg:col-span-5 flex justify-center items-center relative">
+            <div className="relative">
+              <AiCoreOrb size={320} />
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap px-4 py-1.5 rounded-full bg-[#080d1a]/90 border border-cyan-500/30 backdrop-blur-xl shadow-[0_0_20px_rgba(0,242,254,0.2)] text-[11px] font-mono text-cyan-300 flex items-center gap-2">
+                <Cpu className="w-3.5 h-3.5 text-cyan-400 animate-spin" />
+                <span>Quantum Triage Core • Active</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                  <div>
-                    <label className="text-xs font-medium text-stone-300">Email Address</label>
-                    <Input
-                      type="email"
-                      placeholder="user@demo.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="bg-stone-950 border-stone-700 text-stone-100 text-xs mt-1"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-stone-300">Password</label>
-                    <Input
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="bg-stone-950 border-stone-700 text-stone-100 text-xs mt-1"
-                      required
-                    />
+        {/* 3D Interactive Role Matrix */}
+        <div className="mb-16">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-8 pb-4 border-b border-white/[0.08]">
+            <div>
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Layers className="w-5 h-5 text-cyan-400" />
+                Select Role to Launch Portal
+              </h2>
+              <p className="text-xs text-slate-400 font-mono mt-0.5">One-click instant simulated access with pre-configured production credentials</p>
+            </div>
+            <span className="text-xs font-mono text-cyan-400/80 bg-cyan-950/40 border border-cyan-800/40 px-3 py-1 rounded-full mt-2 sm:mt-0">
+              Default Password: 12345
+            </span>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {demoAccounts.map((account, idx) => {
+              const Icon = account.icon;
+              return (
+                <TiltCard
+                  key={account.role}
+                  glowColor={account.glowColor}
+                  className={`cursor-pointer group p-6 rounded-2xl bg-[#090e1a]/80 border border-white/[0.08] backdrop-blur-xl transition-all duration-300 ${account.accentBorder}`}
+                  onClick={() => handleQuickLogin(account.email)}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-3 rounded-xl bg-white/[0.04] border border-white/[0.1] text-cyan-300 group-hover:scale-110 group-hover:text-cyan-200 transition-all duration-300 shadow-lg">
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/[0.05] border border-white/[0.1] text-slate-300">
+                      {account.tag}
+                    </span>
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-xs py-2 mt-2"
-                    disabled={loading}
-                  >
-                    {loading ? 'Authenticating...' : isRegisterMode ? 'Complete Patient Registration' : 'Sign In'}
-                  </Button>
-                </form>
+                  <h3 className="font-bold text-lg text-white group-hover:text-cyan-300 transition-colors flex items-center justify-between">
+                    <span>{account.role}</span>
+                    <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-cyan-300 group-hover:translate-x-1 transition-all" />
+                  </h3>
+                  <p className="text-xs text-cyan-400/90 font-medium mb-2">{account.name}</p>
+                  <p className="text-xs text-slate-400 leading-relaxed mb-4">{account.desc}</p>
 
-                {/* Instant Role Selector */}
-                {!isRegisterMode && (
-                  <div className="pt-3 border-t border-stone-800 space-y-2">
-                    <p className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider">
-                      Instant Demo Role Access (Password: 12345)
-                    </p>
-                    <div className="grid grid-cols-2 gap-2">
-                      {demoAccounts.map((account) => {
-                        const Icon = account.icon;
-                        return (
-                          <button
-                            key={account.role}
-                            type="button"
-                            onClick={() => fillDemo(account.email)}
-                            className="p-2.5 rounded-lg bg-stone-950 border border-stone-800 hover:border-emerald-700/80 transition-colors text-left flex items-start space-x-2 group focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                          >
-                            <div className={`p-1.5 rounded-md ${account.color} mt-0.5 shrink-0`}>
-                              <Icon className="h-3.5 w-3.5" />
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-xs font-semibold text-stone-200 group-hover:text-emerald-400 leading-tight">
-                                {account.role}
-                              </p>
-                              <p className="text-[10px] text-stone-400 truncate mt-0.5">
-                                {account.name.split(' ')[0]}
-                              </p>
-                            </div>
-                          </button>
-                        );
-                      })}
+                  <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-slate-400 group-hover:text-slate-200">
+                    <span>{account.email}</span>
+                    <span className="text-cyan-400 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">Launch →</span>
+                  </div>
+                </TiltCard>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Dedicated Credentials & Direct Login Portal */}
+        <div id="login-portal" className="max-w-xl mx-auto w-full mb-16">
+          <div className="relative rounded-3xl p-8 sm:p-10 bg-[#090f1f]/90 border border-cyan-500/30 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,242,254,0.15)] overflow-hidden">
+            {/* Top Scanning Line */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-pulse" />
+
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.08]">
+              <div>
+                <h3 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <Lock className="w-5 h-5 text-cyan-400" />
+                  {isRegisterMode ? 'Register Patient Account' : 'Secure Authenticator'}
+                </h3>
+                <p className="text-xs text-slate-400 font-mono mt-1">
+                  {isRegisterMode ? 'Free rural patient enrollment' : 'JWT 256-bit encrypted authentication gateway'}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsRegisterMode(!isRegisterMode)}
+                className="text-xs font-mono text-cyan-400 hover:text-cyan-300 underline underline-offset-4"
+              >
+                {isRegisterMode ? 'Already have account? Login' : 'Need account? Sign Up'}
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {isRegisterMode && (
+                <>
+                  <div>
+                    <label className="text-xs font-mono uppercase tracking-wider text-slate-300 block mb-1.5">Full Name</label>
+                    <Input
+                      type="text"
+                      placeholder="e.g. Balwinder Singh"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      className="bg-[#0e162a]/90 border-white/[0.12] focus:border-cyan-400 text-white placeholder:text-slate-500 rounded-xl py-5"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-mono uppercase tracking-wider text-slate-300 block mb-1.5">Village Name</label>
+                      <Input
+                        type="text"
+                        placeholder="e.g. Alhoran"
+                        value={village}
+                        onChange={(e) => setVillage(e.target.value)}
+                        className="bg-[#0e162a]/90 border-white/[0.12] focus:border-cyan-400 text-white placeholder:text-slate-500 rounded-xl py-5"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-mono uppercase tracking-wider text-slate-300 block mb-1.5">Phone Number</label>
+                      <Input
+                        type="tel"
+                        placeholder="+91 98765 43210"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="bg-[#0e162a]/90 border-white/[0.12] focus:border-cyan-400 text-white placeholder:text-slate-500 rounded-xl py-5"
+                      />
                     </div>
                   </div>
+                </>
+              )}
+
+              <div>
+                <label className="text-xs font-mono uppercase tracking-wider text-slate-300 block mb-1.5">Email Address</label>
+                <Input
+                  type="email"
+                  placeholder="patient@demo.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-[#0e162a]/90 border-white/[0.12] focus:border-cyan-400 text-white placeholder:text-slate-500 rounded-xl py-5 font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-mono uppercase tracking-wider text-slate-300 block mb-1.5">Password</label>
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="bg-[#0e162a]/90 border-white/[0.12] focus:border-cyan-400 text-white placeholder:text-slate-500 rounded-xl py-5 font-mono"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full py-6 rounded-xl font-bold text-sm tracking-wide bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black shadow-[0_0_30px_rgba(0,242,254,0.35)] transition-all duration-300 mt-2"
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <Cpu className="w-4 h-4 animate-spin" />
+                    Authorizing Credentials...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    {isRegisterMode ? 'Complete Registration & Enter' : 'Authenticate & Enter System'}
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
                 )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+              </Button>
+            </form>
 
-      {/* Structured Platform Workflows */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-12">
-        <div className="text-center max-w-3xl mx-auto space-y-3">
-          <Badge variant="outline" className="text-xs text-emerald-800 border-emerald-800/40 bg-emerald-50">
-            Cohesive Telemedicine Workflow
-          </Badge>
-          <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
-            Designed for Rural Realities, Built to Clinical Standards
-          </h2>
-          <p className="text-stone-600 text-sm leading-relaxed">
-            Every feature is architected around the constraints of rural healthcare delivery in Punjab: sporadic internet connectivity, traveling doctors, daily-wage constraints, and pharmacy stock uncertainty.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="p-5 rounded-xl bg-white border border-stone-200 shadow-sm space-y-3">
-            <div className="p-2.5 bg-emerald-100/80 text-emerald-900 rounded-lg w-fit">
-              <Calendar className="h-5 w-5" />
-            </div>
-            <h3 className="font-bold text-stone-900 text-base">1. Availability-Verified Booking</h3>
-            <p className="text-xs text-stone-600 leading-relaxed">
-              Patients select genuine open slots for Nabha Civil Hospital physicians. Duplicate bookings and time conflicts are strictly prevented by the appointment state machine.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-xl bg-white border border-stone-200 shadow-sm space-y-3">
-            <div className="p-2.5 bg-emerald-100/80 text-emerald-900 rounded-lg w-fit">
-              <Video className="h-5 w-5" />
-            </div>
-            <h3 className="font-bold text-stone-900 text-base">2. Bandwidth-Adaptive Teleconsultation</h3>
-            <p className="text-xs text-stone-600 leading-relaxed">
-              Video sessions with camera/microphone control and connection interruption recovery. Fallback to audio and structured chat when 2G/3G connections experience high packet loss.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-xl bg-white border border-stone-200 shadow-sm space-y-3">
-            <div className="p-2.5 bg-emerald-100/80 text-emerald-900 rounded-lg w-fit">
-              <Pill className="h-5 w-5" />
-            </div>
-            <h3 className="font-bold text-stone-900 text-base">3. Truthful Pharmacy Inventory</h3>
-            <p className="text-xs text-stone-600 leading-relaxed">
-              Live stock levels with batch numbers and expiry dates. Prevents patients from traveling miles only to discover critical medicines like Amoxicillin or Cetirizine are out of stock.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-xl bg-white border border-stone-200 shadow-sm space-y-3">
-            <div className="p-2.5 bg-emerald-100/80 text-emerald-900 rounded-lg w-fit">
-              <FileText className="h-5 w-5" />
-            </div>
-            <h3 className="font-bold text-stone-900 text-base">4. Protected Health Records (PHR)</h3>
-            <p className="text-xs text-stone-600 leading-relaxed">
-              Strict role-based isolation ensures patients only see their own medical history, while attending physicians can securely review vitals and clinical consultation summaries.
-            </p>
-          </div>
-        </div>
-
-        {/* Low-Bandwidth & Emergency Disclosures */}
-        <div className="grid md:grid-cols-2 gap-6 pt-4">
-          <div className="p-5 rounded-xl bg-amber-50/80 border border-amber-200 text-amber-950 space-y-2">
-            <div className="flex items-center space-x-2 text-amber-900 font-bold text-sm">
-              <AlertTriangle className="h-4 w-4 text-amber-700" />
-              <span>Emergency Clinical Protocol</span>
-            </div>
-            <p className="text-xs leading-relaxed text-amber-900">
-              HealthBridge is intended for non-acute consultations, follow-ups, and routine specialty care. For life-threatening emergencies, severe chest pain, major trauma, or pediatric acute distress, do not wait for a teleconsultation. Dial National Emergency 112 or Medical Ambulance 108 immediately.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 space-y-2">
-            <div className="flex items-center space-x-2 text-emerald-900 font-bold text-sm">
-              <WifiOff className="h-4 w-4 text-emerald-700" />
-              <span>Low-Bandwidth Resilience Guarantee</span>
-            </div>
-            <p className="text-xs leading-relaxed text-emerald-900">
-              Engineered with lightweight JavaScript bundles, localized data persistence, and zero superfluous background network polling. Static assets remain responsive even over rural 2G mobile data connections.
-            </p>
-          </div>
-        </div>
-
-        {/* Frequently Asked Questions */}
-        <div className="pt-8 space-y-6">
-          <div className="text-center space-y-1">
-            <h3 className="text-xl font-bold text-stone-900">Frequently Asked Questions</h3>
-            <p className="text-xs text-stone-600">Common questions about the HealthBridge rural pilot</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4 text-xs">
-            <div className="p-4 bg-white border border-stone-200 rounded-lg space-y-1.5">
-              <p className="font-bold text-stone-900">Can patients from any village book consultations?</p>
-              <p className="text-stone-600 leading-relaxed">
-                Yes, during the Nabha pilot, residents from Nabha town and all 173 surrounding Gram Panchayats in Patiala district can register and book teleconsultations with Civil Hospital physicians.
-              </p>
-            </div>
-
-            <div className="p-4 bg-white border border-stone-200 rounded-lg space-y-1.5">
-              <p className="font-bold text-stone-900">Is the AI Symptom Checker a medical diagnosis?</p>
-              <p className="text-stone-600 leading-relaxed">
-                No. The AI Symptom Checker is purely an informational triage aid designed to assist patients in organizing their symptoms before speaking with a licensed physician. It does not issue prescriptions or replace clinical judgment.
-              </p>
-            </div>
-
-            <div className="p-4 bg-white border border-stone-200 rounded-lg space-y-1.5">
-              <p className="font-bold text-stone-900">How is patient data protected?</p>
-              <p className="text-stone-600 leading-relaxed">
-                HealthBridge implements strict role-based access control (RBAC). Patients cannot view or modify other patients' medical records, and all clinical actions leave an immutable audit trail.
-              </p>
-            </div>
-
-            <div className="p-4 bg-white border border-stone-200 rounded-lg space-y-1.5">
-              <p className="font-bold text-stone-900">What languages are supported?</p>
-              <p className="text-stone-600 leading-relaxed">
-                The platform supports English, Hindi, and Punjabi, allowing rural users to switch interfaces seamlessly using the language switcher in the header.
-              </p>
+            <div className="mt-6 pt-5 border-t border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-slate-400">
+              <span className="flex items-center gap-1.5 text-emerald-400">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Anti-Privilege Escalation Enforced
+              </span>
+              <span>AES-256 Bit</span>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Footer */}
+        {/* Emergency Triage Hotlines Banner */}
+        <div className="rounded-2xl p-6 bg-gradient-to-r from-rose-950/40 via-amber-950/30 to-rose-950/40 border border-rose-500/30 backdrop-blur-xl flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300">
+              <AlertTriangle className="w-6 h-6 animate-pulse" />
+            </div>
+            <div>
+              <p className="font-bold text-white text-sm">Emergency Medical Critical Protocol</p>
+              <p className="text-xs text-rose-200/70">For acute chest pain, trauma, or severe respiratory distress in Nabha, contact national helplines immediately.</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <a 
+              href="tel:112" 
+              className="px-4 py-2 rounded-xl bg-rose-600/30 border border-rose-500/50 hover:bg-rose-600/50 text-white font-mono text-xs font-bold transition-all shadow-[0_0_15px_rgba(244,63,94,0.3)]"
+            >
+              Dial 112 (National Emergency)
+            </a>
+            <a 
+              href="tel:108" 
+              className="px-4 py-2 rounded-xl bg-amber-600/30 border border-amber-500/50 hover:bg-amber-600/50 text-white font-mono text-xs font-bold transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)]"
+            >
+              Dial 108 (Ambulance)
+            </a>
+          </div>
+        </div>
+      </main>
+
       <Footer />
     </div>
   );

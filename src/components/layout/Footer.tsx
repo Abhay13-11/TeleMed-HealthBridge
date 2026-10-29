@@ -16,17 +16,17 @@ export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-stone-900 text-stone-200 overflow-hidden border-t border-stone-800">
+    <footer className="relative bg-[#05070d]/90 text-slate-200 overflow-hidden border-t border-cyan-500/20 backdrop-blur-2xl">
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-12">
         {/* Core Principles */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-10 border-b border-stone-800">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-10 border-b border-white/[0.08]">
           <div className="flex items-start space-x-3">
             <div className="p-2.5 bg-emerald-950/80 border border-emerald-800/50 rounded-lg text-emerald-400">
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
               <p className="font-medium text-stone-100 text-sm">Patient Privacy</p>
-              <p className="text-xs text-stone-400 mt-0.5">Role-based access control and clinical confidentiality</p>
+              <p className="text-xs text-slate-400 mt-0.5">Role-based access control and clinical confidentiality</p>
             </div>
           </div>
 
@@ -36,7 +36,7 @@ export const Footer: React.FC = () => {
             </div>
             <div>
               <p className="font-medium text-stone-100 text-sm">Secure Communications</p>
-              <p className="text-xs text-stone-400 mt-0.5">Protected consultation channels & encrypted records</p>
+              <p className="text-xs text-slate-400 mt-0.5">Protected consultation channels & encrypted records</p>
             </div>
           </div>
 
@@ -46,7 +46,7 @@ export const Footer: React.FC = () => {
             </div>
             <div>
               <p className="font-medium text-stone-100 text-sm">Rural Health Equity</p>
-              <p className="text-xs text-stone-400 mt-0.5">Serving Nabha & 173 surrounding villages in Punjab</p>
+              <p className="text-xs text-slate-400 mt-0.5">Serving Nabha & 173 surrounding villages in Punjab</p>
             </div>
           </div>
 
@@ -56,7 +56,7 @@ export const Footer: React.FC = () => {
             </div>
             <div>
               <p className="font-medium text-stone-100 text-sm">Emergency Protocols</p>
-              <p className="text-xs text-stone-400 mt-0.5">Call National 112 / Medical 108 for critical emergencies</p>
+              <p className="text-xs text-slate-400 mt-0.5">Call National 112 / Medical 108 for critical emergencies</p>
             </div>
           </div>
         </div>
@@ -73,14 +73,14 @@ export const Footer: React.FC = () => {
                 <p className="text-xs text-emerald-400 font-medium">HealthBridge Nabha</p>
               </div>
             </div>
-            <p className="text-xs text-stone-400 leading-relaxed">
+            <p className="text-xs text-slate-400 leading-relaxed">
               Bridging the healthcare gap between rural communities and clinical specialists through accessible telemedicine, truthful pharmacy tracking, and digital records.
             </p>
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-stone-300 mb-3">Healthcare Workflows</h4>
-            <ul className="space-y-2 text-xs text-stone-400">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3">Healthcare Workflows</h4>
+            <ul className="space-y-2 text-xs text-slate-400">
               <li>Remote Teleconsultations</li>
               <li>Doctor Availability Scheduling</li>
               <li>Digital Health Records (PHR)</li>
@@ -90,8 +90,8 @@ export const Footer: React.FC = () => {
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-stone-300 mb-3">Target Deployment</h4>
-            <ul className="space-y-2 text-xs text-stone-400">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3">Target Deployment</h4>
+            <ul className="space-y-2 text-xs text-slate-400">
               <li>Nabha Civil Hospital, Punjab</li>
               <li>Patiala District Primary Care</li>
               <li>173 Surrounding Gram Panchayats</li>
@@ -100,8 +100,8 @@ export const Footer: React.FC = () => {
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-stone-300 mb-3">Clinical Disclaimer</h4>
-            <div className="space-y-2 text-xs text-stone-400">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3">Clinical Disclaimer</h4>
+            <div className="space-y-2 text-xs text-slate-400">
               <p>
                 TeleMed HealthBridge is not an emergency dispatch provider. If you or a loved one is experiencing severe chest pain, shortness of breath, acute trauma, or loss of consciousness, please seek immediate emergency care at Nabha Civil Hospital or dial 112.
               </p>
@@ -110,9 +110,9 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-6 border-t border-stone-800 text-xs text-stone-500 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div className="pt-6 border-t border-white/[0.08] text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-3">
           <p>© {currentYear} HealthBridge Nabha. Architected & Developed by <span className="text-emerald-400 font-medium">Abhay Singh Chauhan</span>.</p>
-          <p className="text-stone-400">Optimized for Low-Bandwidth Networks (2G/3G/4G)</p>
+          <p className="text-slate-400">Optimized for Low-Bandwidth Networks (2G/3G/4G)</p>
         </div>
       </div>
     </footer>

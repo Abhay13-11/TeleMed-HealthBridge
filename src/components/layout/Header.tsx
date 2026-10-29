@@ -15,7 +15,9 @@ import {
   Shield,
   Stethoscope,
   Building2,
-  AlertCircle
+  AlertCircle,
+  Activity,
+  Cpu
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -64,60 +66,66 @@ export const Header: React.FC = () => {
     }
   }, [user]);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
-
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
   const navItems = [
-    { icon: Home, label: t('nav.home'), path: '/' },
-    { icon: Calendar, label: t('nav.appointments'), path: '/appointments' },
-    { icon: MessageSquare, label: t('nav.consultations'), path: '/consultations' },
-    { icon: FileText, label: t('nav.reports'), path: '/reports' },
+    { label: 'Dashboard', path: '/', icon: Home },
+    { label: 'Consultations', path: '/consultations', icon: Video },
+    { label: 'Appointments', path: '/appointments', icon: Calendar },
+    { label: 'Records', path: '/reports', icon: FileText },
   ];
+
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   const getRoleIcon = () => {
     switch (user?.role) {
       case 'doctor':
-        return <Stethoscope className="h-4 w-4 text-emerald-100" />;
+        return <Stethoscope className="h-4 w-4 text-emerald-400" />;
       case 'pharmacy':
-        return <Building2 className="h-4 w-4 text-emerald-100" />;
+        return <Building2 className="h-4 w-4 text-violet-400" />;
       case 'admin':
-        return <Shield className="h-4 w-4 text-emerald-100" />;
+        return <Shield className="h-4 w-4 text-amber-400" />;
       default:
-        return <UserIcon className="h-4 w-4 text-emerald-100" />;
+        return <UserIcon className="h-4 w-4 text-cyan-400" />;
     }
   };
 
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled 
-            ? 'bg-stone-900/95 backdrop-blur-md shadow-md border-b border-stone-800' 
-            : 'bg-stone-900 border-b border-stone-800/80'
+            ? 'bg-[#060911]/90 backdrop-blur-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] border-b border-cyan-500/20' 
+            : 'bg-[#070b14]/80 backdrop-blur-xl border-b border-white/[0.08]'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-18 py-3">
             {/* Logo Section */}
             <div
-              className="flex items-center space-x-3 cursor-pointer"
+              className="flex items-center space-x-3 cursor-pointer group"
               onClick={() => navigate('/')}
             >
-              <div className="p-2 bg-emerald-800 text-white rounded-lg shadow-sm">
-                <Heart className="h-5 w-5" fill="currentColor" />
+              <div className="relative">
+                <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 opacity-60 blur-sm group-hover:opacity-100 transition duration-300" />
+                <div className="relative p-2 bg-[#090f1d] border border-cyan-400/40 rounded-xl text-cyan-300 shadow-[0_0_15px_rgba(0,242,254,0.3)]">
+                  <Heart className="h-5 w-5 fill-cyan-400" />
+                </div>
               </div>
               <div>
-                <span className="font-bold text-lg text-stone-100 tracking-tight">TeleMed</span>
-                <span className="text-xs text-emerald-400 font-medium ml-1.5 hidden sm:inline-block">HealthBridge Nabha</span>
+                <div className="flex items-center space-x-2">
+                  <span className="font-extrabold text-lg text-white tracking-tight drop-shadow-md">HealthBridge</span>
+                  <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300">AI</span>
+                </div>
+                <p className="text-[10px] font-mono text-cyan-400/70 hidden sm:block">Nabha Telehealth Node</p>
               </div>
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-1">
+            <nav className="hidden md:flex items-center space-x-1.5">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.path;
                 const Icon = item.icon;
@@ -126,10 +134,10 @@ export const Header: React.FC = () => {
                     key={item.path}
                     variant="ghost"
                     size="sm"
-                    className={`flex items-center space-x-1.5 text-xs font-medium px-3 py-1.5 rounded-md transition-colors ${
+                    className={`flex items-center space-x-1.5 text-xs font-medium px-3.5 py-2 rounded-xl transition-all duration-300 ${
                       isActive 
-                        ? 'bg-stone-800 text-emerald-400 font-semibold' 
-                        : 'text-stone-300 hover:text-white hover:bg-stone-800/60'
+                        ? 'bg-cyan-500/15 text-cyan-300 font-semibold border border-cyan-400/40 shadow-[0_0_15px_rgba(0,242,254,0.2)]' 
+                        : 'text-slate-300 hover:text-white hover:bg-white/[0.06]'
                     }`}
                     onClick={() => navigate(item.path)}
                   >
@@ -152,13 +160,13 @@ export const Header: React.FC = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="relative text-stone-300 hover:text-white hover:bg-stone-800"
+                  className="relative text-slate-300 hover:text-cyan-300 hover:bg-white/[0.06] rounded-xl border border-white/[0.06]"
                   onClick={() => setIsNotificationsOpen(true)}
                   aria-label="View notifications"
                 >
                   <Bell className="h-4 w-4" />
                   {unreadCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-amber-500 rounded-full" />
+                    <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-cyan-400 rounded-full shadow-[0_0_8px_#00F2FE] animate-pulse" />
                   )}
                 </Button>
               )}
@@ -167,36 +175,36 @@ export const Header: React.FC = () => {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center space-x-2 pl-2 pr-3 py-1.5 rounded-lg bg-stone-800/80 hover:bg-stone-800 border border-stone-700/60 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                      <div className="p-1 rounded-full bg-emerald-900 border border-emerald-700/50">
+                    <button className="flex items-center space-x-2.5 pl-2.5 pr-3.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] transition-all text-left focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                      <div className="p-1 rounded-lg bg-black/40 border border-white/[0.1]">
                         {getRoleIcon()}
                       </div>
                       <div className="hidden sm:block">
-                        <p className="text-xs font-medium text-stone-100 leading-none">{user.name}</p>
-                        <p className="text-[10px] text-stone-400 capitalize mt-0.5 leading-none">{user.role}</p>
+                        <p className="text-xs font-semibold text-white leading-none">{user.name}</p>
+                        <p className="text-[10px] font-mono text-cyan-400 capitalize mt-0.5 leading-none">{user.role}</p>
                       </div>
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 mt-2 bg-stone-900 border-stone-800 text-stone-200">
-                    <DropdownMenuLabel className="text-xs text-stone-400">Account Role: {user.role.toUpperCase()}</DropdownMenuLabel>
-                    <DropdownMenuSeparator className="bg-stone-800" />
+                  <DropdownMenuContent align="end" className="w-56 mt-2 bg-[#080d1a]/95 border-cyan-500/30 text-slate-200 backdrop-blur-2xl shadow-[0_10px_35px_rgba(0,0,0,0.8)] rounded-xl p-1">
+                    <DropdownMenuLabel className="text-[11px] font-mono text-cyan-400">ROLE: {user.role.toUpperCase()}</DropdownMenuLabel>
+                    <DropdownMenuSeparator className="bg-white/[0.08]" />
                     <DropdownMenuItem 
-                      className="text-xs cursor-pointer hover:bg-stone-800 focus:bg-stone-800"
+                      className="text-xs cursor-pointer hover:bg-cyan-500/10 hover:text-cyan-300 focus:bg-cyan-500/10 focus:text-cyan-300 rounded-lg"
                       onClick={() => setIsProfileOpen(true)}
                     >
-                      <UserIcon className="mr-2 h-3.5 w-3.5 text-stone-400" />
+                      <UserIcon className="mr-2 h-3.5 w-3.5 text-slate-400" />
                       <span>Profile & Consent</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
-                      className="text-xs cursor-pointer hover:bg-stone-800 focus:bg-stone-800"
+                      className="text-xs cursor-pointer hover:bg-cyan-500/10 hover:text-cyan-300 focus:bg-cyan-500/10 focus:text-cyan-300 rounded-lg"
                       onClick={() => navigate('/appointments')}
                     >
-                      <Calendar className="mr-2 h-3.5 w-3.5 text-stone-400" />
+                      <Calendar className="mr-2 h-3.5 w-3.5 text-slate-400" />
                       <span>My Consultations</span>
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator className="bg-stone-800" />
+                    <DropdownMenuSeparator className="bg-white/[0.08]" />
                     <DropdownMenuItem 
-                      className="text-xs cursor-pointer text-red-400 hover:bg-stone-800 focus:bg-stone-800"
+                      className="text-xs cursor-pointer text-rose-400 hover:bg-rose-500/10 focus:bg-rose-500/10 rounded-lg"
                       onClick={handleLogout}
                     >
                       <LogOut className="mr-2 h-3.5 w-3.5" />
@@ -208,7 +216,7 @@ export const Header: React.FC = () => {
                 <Button 
                   size="sm" 
                   variant="default"
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs"
+                  className="bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black font-semibold text-xs rounded-xl shadow-[0_0_15px_rgba(0,242,254,0.3)]"
                   onClick={() => navigate('/')}
                 >
                   Sign In
@@ -218,8 +226,7 @@ export const Header: React.FC = () => {
               {/* Mobile menu button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 text-stone-300 hover:text-white rounded-md"
-                aria-label="Toggle navigation menu"
+                className="md:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/[0.06] border border-white/[0.06]"
               >
                 {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
@@ -231,84 +238,71 @@ export const Header: React.FC = () => {
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="md:hidden bg-stone-900 border-b border-stone-800 px-4 py-3 space-y-2"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden border-t border-white/[0.08] bg-[#070b14]/95 backdrop-blur-2xl px-4 py-4 space-y-2"
             >
-              {navItems.map((item) => (
-                <Button
-                  key={item.path}
-                  variant="ghost"
-                  size="sm"
-                  className="w-full justify-start text-xs text-stone-300 hover:text-white hover:bg-stone-800"
-                  onClick={() => {
-                    navigate(item.path);
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  <item.icon className="h-4 w-4 mr-2" />
-                  <span>{item.label}</span>
-                </Button>
-              ))}
-              <div className="pt-2 border-t border-stone-800 flex justify-between items-center">
-                <LanguageSwitcher />
-                {user && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={handleLogout}
-                    className="text-xs text-red-400 hover:text-red-300"
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.path}
+                    className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                      isActive 
+                        ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-400/40 shadow-[0_0_15px_rgba(0,242,254,0.2)]' 
+                        : 'text-slate-300 hover:bg-white/[0.06]'
+                    }`}
+                    onClick={() => {
+                      navigate(item.path);
+                      setIsMobileMenuOpen(false);
+                    }}
                   >
-                    <LogOut className="h-3.5 w-3.5 mr-1" />
-                    Sign Out
-                  </Button>
-                )}
+                    <Icon className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+              <div className="pt-2 border-t border-white/[0.08]">
+                <LanguageSwitcher />
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </header>
 
-      {/* Notifications Dialog */}
+      {/* Notifications Modal */}
       <Dialog open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
-        <DialogContent className="max-w-md bg-stone-900 border-stone-800 text-stone-100">
+        <DialogContent className="max-w-md bg-[#080d1a] border-cyan-500/30 text-white backdrop-blur-2xl">
           <DialogHeader>
-            <DialogTitle className="text-base font-semibold flex items-center justify-between">
-              <span>Workflow Notifications</span>
-              {unreadCount > 0 && <Badge variant="secondary" className="text-xs bg-stone-800 text-stone-300">{unreadCount} Unread</Badge>}
+            <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <Bell className="w-4 h-4 text-cyan-400" />
+              Clinical System Notifications
             </DialogTitle>
-            <DialogDescription className="text-xs text-stone-400">
-              Live updates regarding appointments, clinical records, and pharmacy items.
+            <DialogDescription className="text-xs text-slate-400">
+              Live alerts, appointment status shifts, and medication tracking updates.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2.5 max-h-[350px] overflow-y-auto pr-1">
             {notifications.length === 0 ? (
-              <div className="text-center py-8 text-stone-500 text-xs">
-                No notifications received yet.
-              </div>
+              <p className="text-xs text-slate-400 py-6 text-center">No active notifications</p>
             ) : (
-              notifications.map((n) => (
-                <div 
-                  key={n.id}
-                  className={`p-3 rounded-lg border text-xs transition-colors ${
-                    n.read 
-                      ? 'bg-stone-950/40 border-stone-800/80 text-stone-400' 
-                      : 'bg-stone-800/60 border-stone-700 text-stone-200'
+              notifications.map((notif) => (
+                <div
+                  key={notif.id}
+                  className={`p-3 rounded-xl border transition-all text-xs ${
+                    notif.read 
+                      ? 'bg-white/[0.02] border-white/[0.06] text-slate-400' 
+                      : 'bg-cyan-950/20 border-cyan-500/30 text-slate-200'
                   }`}
-                  onClick={() => {
-                    storageService.markNotificationRead(n.id);
-                    if (user?.id) setNotifications(storageService.getNotifications(user.id));
-                  }}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="font-semibold text-stone-200">{n.title}</p>
-                    <span className="text-[10px] text-stone-500 shrink-0">
-                      {new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                  <p className="mt-1 leading-relaxed text-stone-300">{n.message}</p>
+                  <p className="font-semibold text-white mb-0.5">{notif.title}</p>
+                  <p className="text-slate-300 leading-relaxed">{notif.message}</p>
+                  <span className="text-[10px] font-mono text-cyan-400 mt-1 block">
+                    {new Date(notif.createdAt).toLocaleDateString()}
+                  </span>
                 </div>
               ))
             )}
@@ -316,60 +310,39 @@ export const Header: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Profile & Consent Dialog */}
+      {/* Patient Profile & Consent Modal */}
       <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-        <DialogContent className="max-w-lg bg-stone-900 border-stone-800 text-stone-100">
+        <DialogContent className="max-w-md bg-[#080d1a] border-cyan-500/30 text-white backdrop-blur-2xl">
           <DialogHeader>
-            <DialogTitle className="text-base font-semibold">User Profile & Clinical Consent</DialogTitle>
-            <DialogDescription className="text-xs text-stone-400">
-              Authorized credentials and rural healthcare registry information.
-            </DialogDescription>
+            <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <UserIcon className="w-4 h-4 text-cyan-400" />
+              Patient Profile & Telehealth Consent
+            </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4 text-xs">
-            <div className="p-3 bg-stone-950 rounded-lg border border-stone-800 space-y-2">
-              <div className="flex justify-between">
-                <span className="text-stone-400">Name</span>
-                <span className="font-medium text-stone-200">{user?.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-stone-400">Email</span>
-                <span className="text-stone-200">{user?.email}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-stone-400">Assigned Role</span>
-                <Badge variant="outline" className="text-[10px] uppercase text-emerald-400 border-emerald-700/60">{user?.role}</Badge>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-stone-400">Location</span>
-                <span className="text-stone-200">{user?.location || 'Nabha, Punjab'}</span>
-              </div>
+            <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-2">
+              <p><span className="text-slate-400 font-mono">Name:</span> <strong className="text-white">{user?.name}</strong></p>
+              <p><span className="text-slate-400 font-mono">Email:</span> <span className="text-cyan-300">{user?.email}</span></p>
+              <p><span className="text-slate-400 font-mono">Role:</span> <span className="capitalize text-emerald-400 font-semibold">{user?.role}</span></p>
+              {patientProfile && (
+                <>
+                  <p><span className="text-slate-400 font-mono">Village:</span> <span className="text-white">{patientProfile.village}</span></p>
+                  <p><span className="text-slate-400 font-mono">District:</span> <span className="text-white">{patientProfile.district}</span></p>
+                  <p><span className="text-slate-400 font-mono">Blood Group:</span> <span className="text-rose-400 font-bold">{patientProfile.bloodGroup}</span></p>
+                </>
+              )}
             </div>
 
-            {patientProfile && (
-              <div className="p-3 bg-stone-950 rounded-lg border border-stone-800 space-y-2">
-                <p className="font-semibold text-stone-300 border-b border-stone-800 pb-1.5">Registered Patient Context</p>
-                <div className="flex justify-between">
-                  <span className="text-stone-400">Village Gram Panchayat</span>
-                  <span className="text-stone-200">{patientProfile.village}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-stone-400">Emergency Contact</span>
-                  <span className="text-stone-200">{patientProfile.emergencyContact.name} ({patientProfile.emergencyContact.relationship})</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-stone-400">Emergency Phone</span>
-                  <span className="text-stone-200">{patientProfile.emergencyContact.phone}</span>
-                </div>
-                <div className="flex justify-between items-center pt-1 border-t border-stone-800">
-                  <span className="text-stone-400">Telemedicine Consent</span>
-                  <div className="flex items-center text-emerald-400 text-xs">
-                    <CheckCircle className="h-3.5 w-3.5 mr-1" />
-                    <span>Verified Active</span>
-                  </div>
-                </div>
-              </div>
-            )}
+            <div className="p-3.5 rounded-xl bg-emerald-950/20 border border-emerald-500/30 text-emerald-300">
+              <p className="font-semibold flex items-center gap-1.5 mb-1">
+                <CheckCircle className="w-3.5 h-3.5" />
+                Informed Consent Verified
+              </p>
+              <p className="text-[11px] text-slate-300 leading-relaxed">
+                Authorized for remote triage, secure consultation recordings, and encrypted digital prescription processing in Nabha regional health network.
+              </p>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

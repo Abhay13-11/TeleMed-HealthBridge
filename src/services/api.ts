@@ -49,9 +49,9 @@ export const apiClient = {
 
   // ── Authentication ──────────────────────────────────────────────────────────
 
-  async login(email: string, password: string):Promise<{ success: boolean; token: string; user: any }> {
+  async login(email: string, password: string): Promise<{ success: boolean; token: string; user: User }> {
     try {
-      const res = await this.request<{ success: boolean; token: string; user: any }>('/auth/login', {
+      const res = await this.request<{ success: boolean; token: string; user: User }>('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password })
       });
@@ -65,8 +65,8 @@ export const apiClient = {
     }
   },
 
-  async register(data: { name: string; email: string; password: string; phone?: string; location?: string }): Promise<any> {
-    const res = await this.request<{ success: boolean; token: string; user: any }>('/auth/register', {
+  async register(data: { name: string; email: string; password: string; phone?: string; location?: string }): Promise<{ success: boolean; token: string; user: User }> {
+    const res = await this.request<{ success: boolean; token: string; user: User }>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data)
     });
@@ -76,8 +76,8 @@ export const apiClient = {
     return res;
   },
 
-  async getCurrentUser(): Promise<any> {
-    return this.request('/auth/me');
+  async getCurrentUser(): Promise<{ success: boolean; user: User }> {
+    return this.request<{ success: boolean; user: User }>('/auth/me');
   },
 
   // ── Appointments ───────────────────────────────────────────────────────────
@@ -92,15 +92,15 @@ export const apiClient = {
     }
   },
 
-  async createAppointment(appointmentData: any): Promise<Appointment> {
+  async createAppointment(appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>): Promise<Appointment> {
     try {
       const res = await this.request<{ success: boolean; data: Appointment }>('/appointments', {
         method: 'POST',
         body: JSON.stringify(appointmentData)
       });
       return res.data;
-    } catch (err: any) {
-      if (err.message && err.message.includes('already has a scheduled consultation')) {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes('already has a scheduled consultation')) {
         throw err;
       }
       // Offline fallback
@@ -114,15 +114,11 @@ export const apiClient = {
   },
 
   async updateAppointmentStatus(id: string, status: string, notes?: string, newDate?: string, newTime?: string): Promise<Appointment> {
-    try {
-      const res = await this.request<{ success: boolean; data: Appointment }>(`/appointments/${id}/status`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status, notes, newDate, newTime })
-      });
-      return res.data;
-    } catch (err) {
-      throw err;
-    }
+    const res = await this.request<{ success: boolean; data: Appointment }>(`/appointments/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status, notes, newDate, newTime })
+    });
+    return res.data;
   },
 
   // ── Health Records ─────────────────────────────────────────────────────────
@@ -136,7 +132,7 @@ export const apiClient = {
     }
   },
 
-  async createHealthRecord(recordData: any): Promise<HealthRecord> {
+  async createHealthRecord(recordData: Omit<HealthRecord, 'id' | 'createdAt' | 'createdBy'>): Promise<HealthRecord> {
     const res = await this.request<{ success: boolean; data: HealthRecord }>('/records', {
       method: 'POST',
       body: JSON.stringify(recordData)
@@ -166,21 +162,21 @@ export const apiClient = {
 
   // ── Telemetry & Audit Logs ─────────────────────────────────────────────────
 
-  async getTelemetry(): Promise<any> {
+  async getTelemetry(): Promise<Record<string, unknown>> {
     try {
-      const res = await this.request<{ success: boolean; data: any }>('/admin/telemetry');
+      const res = await this.request<{ success: boolean; data: Record<string, unknown> }>('/admin/telemetry');
       return res.data;
     } catch {
-      return storageService.getRealAnalytics();
+      return storageService.getRealAnalytics() as unknown as Record<string, unknown>;
     }
   },
 
-  async getAuditLogs(): Promise<any[]> {
+  async getAuditLogs(): Promise<Record<string, unknown>[]> {
     try {
-      const res = await this.request<{ success: boolean; data: any[] }>('/admin/audit-logs');
+      const res = await this.request<{ success: boolean; data: Record<string, unknown>[] }>('/admin/audit-logs');
       return res.data;
     } catch {
-      return storageService.getAuditLogs();
+      return storageService.getAuditLogs() as unknown as Record<string, unknown>[];
     }
   }
 };

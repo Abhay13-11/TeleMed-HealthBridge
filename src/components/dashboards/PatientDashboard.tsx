@@ -106,10 +106,10 @@ const PatientDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-5xl font-bold text-stone-900 mb-2">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-2 tracking-tight">
             {t('dashboard.patient.title')}
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-lg text-cyan-300/80 font-medium">
             {t('dashboard.patient.welcomeMessage', { name: user?.name })}
           </p>
         </motion.div>

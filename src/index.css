@@ -2,119 +2,122 @@
 @tailwind components;
 @tailwind utilities;
 
-/* HealthBridge Brand System
- * Palette: Warm Ivory, Soft Stone, Deep Forest Green, Muted Sage, Dark Ink, Warm Amber
+/* HealthBridge Grandmaster AI / Vibe Coded Design System
+ * Atmosphere: Obsidian void, Cyber Cyan, Hyper Emerald, Quantum Violet, Iridescent Glass
  */
 
 @layer base {
   :root {
-    /* Canvas & Surfaces: Warm Ivory and Soft Stone */
-    --background: 40 25% 97%;       /* #F8F7F4 warm ivory */
-    --foreground: 150 15% 12%;      /* #1A211D dark ink */
+    --background: 222 47% 5%;        /* #060911 deep cosmic obsidian */
+    --foreground: 210 40% 98%;       /* #F8FAFC crystal luminescence */
 
-    --card: 0 0% 100%;              /* #FFFFFF crisp surface */
-    --card-foreground: 150 15% 12%; /* #1A211D */
+    --card: 224 45% 7%;              /* #090E18 frosted dark slate */
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 150 15% 12%;
+    --popover: 224 45% 7%;
+    --popover-foreground: 210 40% 98%;
 
-    /* Primary: Deep Forest Green (Trustworthy, clinical, organic) */
-    --primary: 152 45% 22%;         /* #1E523A */
-    --primary-foreground: 40 25% 98%;
-    --primary-glow: 152 40% 36%;
+    /* Primary: Cyber Cyan */
+    --primary: 187 100% 49%;         /* #00F2FE glowing cyber cyan */
+    --primary-foreground: 222 47% 5%;
+    --primary-glow: 187 100% 65%;
 
-    /* Secondary: Muted Sage & Soft Stone */
-    --secondary: 140 18% 90%;       /* #E2EAE4 soft sage stone */
-    --secondary-foreground: 152 35% 18%;
+    /* Secondary: Quantum Emerald */
+    --secondary: 160 84% 39%;        /* #10B981 hyper emerald */
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 40 15% 93%;            /* #EDECE7 warm light gray */
-    --muted-foreground: 150 8% 44%; /* #67726C legible medium ink */
+    --muted: 223 35% 14%;            /* #161F30 */
+    --muted-foreground: 215 20% 65%; /* #94A3B8 */
 
-    /* Accent: Restrained Warm Terracotta / Amber */
-    --accent: 28 72% 48%;           /* #D2621C warm terracotta */
-    --accent-foreground: 0 0% 100%;
+    /* Accent: Neon Violet */
+    --accent: 258 90% 66%;           /* #8B5CF6 */
+    --accent-foreground: 210 40% 98%;
 
-    /* Health status indicators */
-    --success: 152 55% 30%;         /* #22774F clinical deep green */
-    --success-foreground: 0 0% 100%;
-    --warning: 38 88% 46%;          /* #DE8312 clear amber */
-    --warning-foreground: 0 0% 100%;
-    --emergency: 0 72% 48%;         /* #D42828 decisive emergency red */
-    --emergency-foreground: 0 0% 100%;
+    /* Status indicators */
+    --success: 160 84% 39%;
+    --success-foreground: 210 40% 98%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 47% 5%;
+    --emergency: 350 89% 60%;
+    --emergency-foreground: 210 40% 98%;
 
-    --destructive: 0 72% 48%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 350 89% 60%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 40 15% 86%;           /* #DEDCD3 quiet stone border */
-    --input: 40 15% 90%;
-    --ring: 152 45% 22%;
+    --border: 223 30% 18%;           /* 1px glowing subtle wireframe */
+    --input: 223 35% 12%;
+    --ring: 187 100% 49%;
 
-    /* Sophisticated subtle gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(152 45% 20%), hsl(152 40% 28%));
-    --gradient-health: linear-gradient(135deg, hsl(152 55% 30%), hsl(152 45% 42%));
-    --gradient-subtle: linear-gradient(180deg, hsl(40 25% 97%), hsl(40 20% 94%));
-
-    /* Shadows with realistic natural depth */
-    --shadow-medical: 0 4px 20px hsl(152 45% 15% / 0.08);
-    --shadow-card: 0 2px 8px hsl(150 15% 12% / 0.05), 0 1px 2px hsl(150 15% 12% / 0.03);
-    --shadow-glow: 0 0 24px hsl(152 45% 22% / 0.15);
-
-    --radius: 0.625rem;
-
-    --sidebar-background: 40 20% 96%;
-    --sidebar-foreground: 150 15% 14%;
-    --sidebar-primary: 152 45% 22%;
-    --sidebar-primary-foreground: 40 25% 98%;
-    --sidebar-accent: 140 18% 90%;
-    --sidebar-accent-foreground: 152 35% 18%;
-    --sidebar-border: 40 15% 86%;
-    --sidebar-ring: 152 45% 22%;
-  }
-
-  .dark {
-    --background: 152 25% 7%;       /* #0C1510 deep dark forest */
-    --foreground: 40 20% 94%;       /* #F2F1EC */
-
-    --card: 152 22% 10%;            /* #121F18 */
-    --card-foreground: 40 20% 94%;
-
-    --popover: 152 22% 10%;
-    --popover-foreground: 40 20% 94%;
-
-    --primary: 152 40% 45%;         /* lighter sage for dark mode */
-    --primary-foreground: 152 25% 8%;
-
-    --secondary: 152 20% 16%;
-    --secondary-foreground: 40 20% 92%;
-
-    --muted: 152 18% 14%;
-    --muted-foreground: 150 10% 65%;
-
-    --accent: 28 72% 52%;
-    --accent-foreground: 0 0% 100%;
-
-    --success: 152 50% 45%;
-    --success-foreground: 152 25% 8%;
-    --warning: 38 85% 55%;
-    --warning-foreground: 152 25% 8%;
-    --emergency: 0 75% 58%;
-    --emergency-foreground: 0 0% 100%;
-
-    --destructive: 0 75% 58%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 152 18% 18%;
-    --input: 152 18% 18%;
-    --ring: 152 40% 45%;
+    --radius: 1rem;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
+@layer utilities {
+  .preserve-3d {
+    transform-style: preserve-3d;
   }
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  
+  .perspective-1000 {
+    perspective: 1000px;
   }
+
+  .glass-panel {
+    background: rgba(10, 15, 29, 0.72);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+
+  .glass-glow-cyan {
+    box-shadow: 0 0 40px -10px rgba(0, 242, 254, 0.25), inset 0 0 20px -5px rgba(0, 242, 254, 0.1);
+  }
+
+  .glass-glow-emerald {
+    box-shadow: 0 0 40px -10px rgba(16, 185, 129, 0.25), inset 0 0 20px -5px rgba(16, 185, 129, 0.1);
+  }
+
+  .glass-glow-violet {
+    box-shadow: 0 0 40px -10px rgba(139, 92, 246, 0.25), inset 0 0 20px -5px rgba(139, 92, 246, 0.1);
+  }
+
+  .cyber-gradient-text {
+    background: linear-gradient(135deg, #00F2FE 0%, #4FACFE 50%, #00C6FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .ai-gradient-text {
+    background: linear-gradient(135deg, #FFFFFF 20%, #A5F3FC 55%, #10B981 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .vibe-mesh {
+    background-image: 
+      radial-gradient(at 15% 15%, rgba(0, 242, 254, 0.12) 0px, transparent 50%),
+      radial-gradient(at 85% 20%, rgba(139, 92, 246, 0.12) 0px, transparent 50%),
+      radial-gradient(at 50% 80%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+  }
+
+  .scanline {
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 242, 254, 0.02) 51%);
+    background-size: 100% 4px;
+  }
+}
+
+/* Custom scrollbars for AI aesthetic */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #060911;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00F2FE;
 }

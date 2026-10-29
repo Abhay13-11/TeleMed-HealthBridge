@@ -105,10 +105,10 @@ export const AdminDashboard = () => {
     <Layout>
       <div className="space-y-6">
         {/* Top Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
           <div>
             <div className="flex items-center space-x-2">
-              <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Platform Operations & Oversight</h1>
+              <h1 className="text-2xl font-bold text-white tracking-tight">Platform Operations & Oversight</h1>
               <Badge variant="outline" className="text-[10px] text-emerald-800 border-emerald-700/50 bg-emerald-50">
                 Administrator
               </Badge>
@@ -136,17 +136,17 @@ export const AdminDashboard = () => {
 
         {/* Real Metrics Overview Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-stone-200 bg-white shadow-sm">
+          <Card className="border-white/[0.08] bg-[#080d1a] shadow-sm">
             <CardHeader className="p-3.5 pb-1">
               <CardTitle className="text-xs font-semibold text-stone-500">Total Scheduled Visits</CardTitle>
             </CardHeader>
             <CardContent className="p-3.5 pt-0">
-              <p className="text-2xl font-bold text-stone-900">{realAnalytics.appointmentsCount}</p>
+              <p className="text-2xl font-bold text-white">{realAnalytics.appointmentsCount}</p>
               <p className="text-[11px] text-stone-500 mt-0.5">Across all 5 clinical departments</p>
             </CardContent>
           </Card>
 
-          <Card className="border-stone-200 bg-white shadow-sm">
+          <Card className="border-white/[0.08] bg-[#080d1a] shadow-sm">
             <CardHeader className="p-3.5 pb-1">
               <CardTitle className="text-xs font-semibold text-stone-500">Completed Consultations</CardTitle>
             </CardHeader>
@@ -156,7 +156,7 @@ export const AdminDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-stone-200 bg-white shadow-sm">
+          <Card className="border-white/[0.08] bg-[#080d1a] shadow-sm">
             <CardHeader className="p-3.5 pb-1">
               <CardTitle className="text-xs font-semibold text-stone-500">Pending Review</CardTitle>
             </CardHeader>
@@ -166,7 +166,7 @@ export const AdminDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="border-stone-200 bg-white shadow-sm">
+          <Card className="border-white/[0.08] bg-[#080d1a] shadow-sm">
             <CardHeader className="p-3.5 pb-1">
               <CardTitle className="text-xs font-semibold text-stone-500">Dispensary Stock Alert</CardTitle>
             </CardHeader>
@@ -183,7 +183,7 @@ export const AdminDashboard = () => {
 
         {/* Tabbed Views */}
         <Tabs defaultValue="audit" className="space-y-4">
-          <TabsList className="bg-stone-100 p-1 border border-stone-200">
+          <TabsList className="bg-stone-100 p-1 border border-white/[0.08]">
             <TabsTrigger value="audit" className="text-xs">Operational Audit Trail</TabsTrigger>
             <TabsTrigger value="appointments" className="text-xs">Live Appointments ({appointments.length})</TabsTrigger>
             <TabsTrigger value="inventory" className="text-xs">Dispensary Stock ({inventory.length})</TabsTrigger>
@@ -192,9 +192,9 @@ export const AdminDashboard = () => {
 
           {/* Audit Logs Content */}
           <TabsContent value="audit" className="space-y-3">
-            <Card className="border-stone-200 bg-white shadow-sm">
+            <Card className="border-white/[0.08] bg-[#080d1a] shadow-sm">
               <CardHeader className="p-4 pb-2 border-b border-stone-100">
-                <CardTitle className="text-sm font-bold text-stone-900 flex items-center justify-between">
+                <CardTitle className="text-sm font-bold text-white flex items-center justify-between">
                   <span>Clinical & Administrative Event Log</span>
                   <Badge variant="outline" className="text-[10px] text-stone-500">{auditLogs.length} Events</Badge>
                 </CardTitle>
@@ -209,7 +209,7 @@ export const AdminDashboard = () => {
                   </div>
                 ) : (
                   <Table className="text-xs">
-                    <TableHeader className="bg-stone-50">
+                    <TableHeader className="bg-[#090e1a]">
                       <TableRow>
                         <TableHead className="py-2.5">Time</TableHead>
                         <TableHead className="py-2.5">Actor</TableHead>
@@ -220,7 +220,7 @@ export const AdminDashboard = () => {
                     </TableHeader>
                     <TableBody>
                       {auditLogs.map((log) => (
-                        <TableRow key={log.id} className="hover:bg-stone-50/50">
+                        <TableRow key={log.id} className="hover:bg-[#090e1a]/50">
                           <TableCell className="py-2 text-[11px] text-stone-500">
                             {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                           </TableCell>
@@ -241,10 +241,10 @@ export const AdminDashboard = () => {
 
           {/* Appointments View */}
           <TabsContent value="appointments" className="space-y-3">
-            <Card className="border-stone-200 bg-white shadow-sm">
+            <Card className="border-white/[0.08] bg-[#080d1a] shadow-sm">
               <CardContent className="p-0">
                 <Table className="text-xs">
-                  <TableHeader className="bg-stone-50">
+                  <TableHeader className="bg-[#090e1a]">
                     <TableRow>
                       <TableHead>Ref ID</TableHead>
                       <TableHead>Patient</TableHead>
@@ -258,7 +258,7 @@ export const AdminDashboard = () => {
                     {appointments.map((apt) => (
                       <TableRow key={apt.id}>
                         <TableCell className="font-mono text-[11px] text-stone-500">{apt.id}</TableCell>
-                        <TableCell className="font-medium text-stone-900">{apt.patientName}</TableCell>
+                        <TableCell className="font-medium text-white">{apt.patientName}</TableCell>
                         <TableCell className="text-stone-700">{apt.doctorName} ({apt.specialty})</TableCell>
                         <TableCell className="text-stone-600">{apt.date} • {apt.time}</TableCell>
                         <TableCell className="capitalize text-stone-600">{apt.type}</TableCell>
@@ -281,10 +281,10 @@ export const AdminDashboard = () => {
 
           {/* Dispensary Stock View */}
           <TabsContent value="inventory" className="space-y-3">
-            <Card className="border-stone-200 bg-white shadow-sm">
+            <Card className="border-white/[0.08] bg-[#080d1a] shadow-sm">
               <CardContent className="p-0">
                 <Table className="text-xs">
-                  <TableHeader className="bg-stone-50">
+                  <TableHeader className="bg-[#090e1a]">
                     <TableRow>
                       <TableHead>Medicine Name</TableHead>
                       <TableHead>Category</TableHead>
@@ -297,7 +297,7 @@ export const AdminDashboard = () => {
                   <TableBody>
                     {inventory.map((item) => (
                       <TableRow key={item.id}>
-                        <TableCell className="font-semibold text-stone-900">{item.name}</TableCell>
+                        <TableCell className="font-semibold text-white">{item.name}</TableCell>
                         <TableCell className="text-stone-600">{item.category}</TableCell>
                         <TableCell>
                           <Badge variant={
@@ -320,10 +320,10 @@ export const AdminDashboard = () => {
 
           {/* Accounts View */}
           <TabsContent value="users" className="space-y-3">
-            <Card className="border-stone-200 bg-white shadow-sm">
+            <Card className="border-white/[0.08] bg-[#080d1a] shadow-sm">
               <CardContent className="p-0">
                 <Table className="text-xs">
-                  <TableHeader className="bg-stone-50">
+                  <TableHeader className="bg-[#090e1a]">
                     <TableRow>
                       <TableHead>Name</TableHead>
                       <TableHead>Email</TableHead>
@@ -335,7 +335,7 @@ export const AdminDashboard = () => {
                   <TableBody>
                     {demoUsers.map((u) => (
                       <TableRow key={u.id}>
-                        <TableCell className="font-medium text-stone-900">{u.name}</TableCell>
+                        <TableCell className="font-medium text-white">{u.name}</TableCell>
                         <TableCell className="text-stone-600">{u.email}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className="text-[10px] uppercase">{u.role}</Badge>
