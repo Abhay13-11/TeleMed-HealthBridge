@@ -38,7 +38,9 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMessaging } from '@/contexts/MessagingContext';
-import { mockAppointments, mockPrescriptions, mockMedicineStock } from '@/data/mockData';
+import { mockPrescriptions, mockMedicineStock } from '@/data/mockData';
+import { storageService } from '@/services/storage';
+import { Appointment } from '@/types/medical';
 import { useToast } from '@/hooks/use-toast';
 import { ChatInterface } from '@/components/chat/ChatInterface';
 import { ConversationsList } from '@/components/chat/ConversationsList';
@@ -57,7 +59,19 @@ const PatientDashboard = () => {
   const [showVideoCall, setShowVideoCall] = useState(false);
   const [showAppointmentBooking, setShowAppointmentBooking] = useState(false);
 
-  const patientAppointments = mockAppointments.filter(apt => apt.patientId === user?.id);
+  const [patientAppointments, setPatientAppointments] = useState<Appointment[]>(() => {
+    return user?.id ? storageService.getAppointments({ patientId: user.id }) : [];
+  });
+
+  const reloadAppointments = () => {
+    if (user?.id) {
+      setPatientAppointments(storageService.getAppointments({ patientId: user.id }));
+    }
+  };
+
+  React.useEffect(() => {
+    reloadAppointments();
+  }, [user?.id]);
   const patientPrescriptions = mockPrescriptions.filter(presc => presc.patientId === user?.id);
 
 
@@ -92,7 +106,7 @@ const PatientDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent mb-2">
+          <h1 className="text-5xl font-bold text-stone-900 mb-2">
             {t('dashboard.patient.title')}
           </h1>
           <p className="text-xl text-gray-600">

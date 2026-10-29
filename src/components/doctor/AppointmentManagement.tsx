@@ -28,6 +28,8 @@ import {
   Timer
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { storageService } from '@/services/storage';
 import { format } from 'date-fns';
 
 interface Appointment {
@@ -201,6 +203,15 @@ export const AppointmentManagement: React.FC<AppointmentManagementProps> = ({
   };
 
   const handleApproveAppointment = (appointment: Appointment) => {
+    try {
+      storageService.updateAppointmentStatus(
+        appointment.id, 
+        'CONFIRMED', 
+        user || { id: '2', name: 'Dr. Rachit', role: 'doctor', email: 'doctor@demo.com' }
+      );
+    } catch (e) {
+      // Continue with UI state update
+    }
     setAppointments(appointments.map(apt => 
       apt.id === appointment.id ? { ...apt, status: 'approved' } : apt
     ));

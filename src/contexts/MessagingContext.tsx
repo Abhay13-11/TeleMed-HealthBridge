@@ -14,7 +14,7 @@ export interface Message {
   timestamp: Date;
   isRead: boolean;
   type: 'text' | 'voice' | 'video' | 'transcript' | 'prescription';
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 export interface Conversation {
@@ -38,7 +38,7 @@ interface MessagingContextType {
   messages: Message[];
   isTyping: { [userId: string]: boolean };
   onlineUsers: Set<string>;
-  sendMessage: (content: string, type?: Message['type'], metadata?: any) => void;
+  sendMessage: (content: string, type?: Message['type'], metadata?: Record<string, unknown>) => void;
   createConversation: (participantId: string) => Conversation;
   setActiveConversation: (conversation: Conversation | null) => void;
   markAsRead: (conversationId: string) => void;
@@ -49,7 +49,7 @@ interface MessagingContextType {
 const MessagingContext = createContext<MessagingContextType | undefined>(undefined);
 
 // Mock data generator for demo
-const generateMockMessages = (conversationId: string, participants: any[]): Message[] => {
+const generateMockMessages = (conversationId: string, participants: Conversation['participants']): Message[] => {
   const messages: Message[] = [];
   const messageTemplates = [
     "Hello, I need help with my prescription.",
@@ -186,7 +186,7 @@ export const MessagingProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   }, [activeConversation]);
 
-  const sendMessage = useCallback((content: string, type: Message['type'] = 'text', metadata?: any) => {
+  const sendMessage = useCallback((content: string, type: Message['type'] = 'text', metadata?: Record<string, unknown>) => {
     if (!activeConversation || !user) return;
 
     const otherParticipant = activeConversation.participants.find(p => p.id !== user.id);

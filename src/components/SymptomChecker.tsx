@@ -103,7 +103,7 @@ export const SymptomChecker: React.FC<SymptomCheckerProps> = ({ onBookAppointmen
     severity: 'mild' | 'moderate' | 'severe'
   ): SymptomAnalysis => {
     // AI-like diagnosis logic based on symptom combinations
-    let analysis: SymptomAnalysis = {
+    const analysis: SymptomAnalysis = {
       possibleConditions: [],
       recommendations: [],
       urgency: 'routine',
@@ -123,7 +123,7 @@ export const SymptomChecker: React.FC<SymptomCheckerProps> = ({ onBookAppointmen
         description: 'Chest pain with breathing difficulty requires immediate medical attention'
       });
       analysis.recommendations = [
-        'Call emergency services immediately (108)',
+        'Call National Emergency 112 or Medical Ambulance 108 immediately',
         'Do not drive yourself to the hospital',
         'Take aspirin if available and not allergic',
         'Stay calm and sit upright'

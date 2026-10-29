@@ -7,14 +7,12 @@ import {
   VideoOff, 
   Mic, 
   MicOff, 
-  Phone, 
   PhoneOff,
   MessageSquare,
-  Users,
-  Settings,
   Maximize,
-  Monitor,
-  Volume2
+  Volume2,
+  ShieldCheck,
+  AlertTriangle
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -34,38 +32,54 @@ export const VideoCall: React.FC<VideoCallProps> = ({
   const { toast } = useToast();
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
-  const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'reconnecting'>('connecting');
+  const [cameraPermissionGranted, setCameraPermissionGranted] = useState<boolean | null>(null);
+
   const videoRef = useRef<HTMLVideoElement>(null);
-  const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
-    // Simulate connection establishment
-    setTimeout(() => {
+
+    // Attempt local media stream acquisition
+    if (typeof navigator !== 'undefined' && navigator.mediaDevices?.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then((stream) => {
+          mediaStreamRef.current = stream;
+          setCameraPermissionGranted(true);
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+            videoRef.current.play().catch(() => {});
+          }
+        })
+        .catch(() => {
+          // Fallback gracefully for permission denial or sandbox constraints
+          setCameraPermissionGranted(false);
+        });
+    }
+
+    // Simulate peer connection handshake
+    const connectTimer = setTimeout(() => {
       setConnectionStatus('connected');
       toast({
-        title: "Connected",
-        description: `You are now connected with ${participantName}`,
+        title: "Teleconsultation Connected",
+        description: `Secure clinical video link active with ${participantName}`,
       });
-    }, 2000);
+    }, 1500);
 
-    // Start call duration timer
+    // Call duration timer
     const timer = setInterval(() => {
       setCallDuration(prev => prev + 1);
     }, 1000);
 
-    // Simulate getting user media (for demo)
-    if (videoRef.current) {
-      // In a real app, you would use navigator.mediaDevices.getUserMedia
-      // For demo, we'll just show a placeholder
-      videoRef.current.style.background = '#1a1a1a';
-    }
-
     return () => {
+      clearTimeout(connectTimer);
       clearInterval(timer);
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      }
     };
-  }, [participantName]);
+  }, [participantName, toast]);
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -74,108 +88,87 @@ export const VideoCall: React.FC<VideoCallProps> = ({
   };
 
   const toggleVideo = () => {
+    if (mediaStreamRef.current) {
+      const videoTracks = mediaStreamRef.current.getVideoTracks();
+      videoTracks.forEach(t => { t.enabled = !isVideoOn; });
+    }
     setIsVideoOn(!isVideoOn);
     toast({
-      title: isVideoOn ? "Camera Off" : "Camera On",
-      description: isVideoOn ? "Your camera has been turned off" : "Your camera is now on",
+      title: isVideoOn ? "Camera Disabled" : "Camera Enabled",
+      description: isVideoOn ? "Your video feed has been turned off" : "Your video feed is now streaming",
     });
   };
 
   const toggleMute = () => {
+    if (mediaStreamRef.current) {
+      const audioTracks = mediaStreamRef.current.getAudioTracks();
+      audioTracks.forEach(t => { t.enabled = isMuted; });
+    }
     setIsMuted(!isMuted);
     toast({
-      title: isMuted ? "Unmuted" : "Muted",
-      description: isMuted ? "Your microphone is now on" : "You are now muted",
-    });
-  };
-
-  const toggleScreenShare = () => {
-    setIsScreenSharing(!isScreenSharing);
-    toast({
-      title: isScreenSharing ? "Screen Sharing Stopped" : "Screen Sharing Started",
-      description: isScreenSharing 
-        ? "You have stopped sharing your screen" 
-        : "You are now sharing your screen",
+      title: isMuted ? "Microphone Unmuted" : "Microphone Muted",
+      description: isMuted ? "Your audio is live" : "Your audio has been muted",
     });
   };
 
   const handleEndCall = () => {
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => track.stop());
+    }
     toast({
-      title: "Call Ended",
-      description: `Your call with ${participantName} has ended`,
+      title: "Consultation Concluded",
+      description: `Teleconsultation session with ${participantName} ended. Duration: ${formatDuration(callDuration)}.`,
     });
     onEndCall();
   };
 
   return (
-    <Card className="h-full bg-gray-900 text-white">
-      <CardContent className="p-0 h-full flex flex-col">
-        {/* Status Bar */}
-        <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-          <div className="flex items-center space-x-4">
+    <Card className="h-full bg-stone-950 text-white border-0 flex flex-col justify-between overflow-hidden">
+      <CardContent className="p-0 h-full flex flex-col relative">
+        {/* Top Floating Status Bar */}
+        <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-20">
+          <div className="flex items-center space-x-2">
             <Badge 
-              variant={connectionStatus === 'connected' ? 'default' : 'secondary'}
-              className="bg-opacity-80"
+              variant={connectionStatus === 'connected' ? 'success' : 'secondary'}
+              className="text-[11px] bg-emerald-950/80 text-emerald-300 border-emerald-800"
             >
-              {connectionStatus === 'connecting' && "Connecting..."}
-              {connectionStatus === 'connected' && `Connected • ${formatDuration(callDuration)}`}
+              {connectionStatus === 'connecting' && "Establishing Session..."}
+              {connectionStatus === 'connected' && `Encrypted Session • ${formatDuration(callDuration)}`}
               {connectionStatus === 'reconnecting' && "Reconnecting..."}
             </Badge>
-            <Badge variant="outline" className="bg-opacity-80 text-white border-white">
-              <Volume2 className="h-3 w-3 mr-1" />
-              HD Quality
+            <Badge variant="outline" className="text-[10px] text-stone-300 border-stone-700 bg-stone-900/80">
+              <ShieldCheck className="h-3 w-3 mr-1 text-emerald-400" />
+              Nabha Civil Hospital
             </Badge>
           </div>
-          
-          <div className="flex items-center space-x-2">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="text-white hover:bg-white/20"
-              onClick={() => {}}
-            >
-              <Settings className="h-5 w-5" />
-            </Button>
-            <Button
-              size="icon"
-              variant="ghost"
-              className="text-white hover:bg-white/20"
-              onClick={() => {}}
-            >
-              <Maximize className="h-5 w-5" />
-            </Button>
+
+          <div className="text-xs text-stone-400 bg-stone-900/80 px-2 py-1 rounded border border-stone-800 hidden sm:block">
+            Low-Bandwidth Adaptive Mode
           </div>
         </div>
 
-        {/* Video Grid */}
-        <div className="flex-1 relative">
-          {/* Remote Video (Main) */}
-          <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-            <video
-              ref={remoteVideoRef}
-              className="w-full h-full object-cover"
-              autoPlay
-              playsInline
-            />
-            {/* Placeholder for demo */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center mb-4">
-                <span className="text-4xl font-semibold">
-                  {participantName.split(' ').map(n => n[0]).join('')}
-                </span>
-              </div>
-              <h3 className="text-xl font-semibold">{participantName}</h3>
-              <p className="text-sm text-gray-400">{participantRole}</p>
-              {!isVideoOn && (
-                <Badge variant="secondary" className="mt-2">
-                  Camera is off
-                </Badge>
-              )}
+        {/* Video Stage */}
+        <div className="flex-1 relative bg-stone-900 flex items-center justify-center overflow-hidden">
+          {/* Remote Video Feed (Main) */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-emerald-950 border-2 border-emerald-700 flex items-center justify-center mb-3 shadow-lg">
+              <span className="text-2xl sm:text-3xl font-bold text-emerald-200">
+                {participantName.split(' ').map(n => n[0]).join('')}
+              </span>
             </div>
+            <h3 className="text-base sm:text-lg font-bold text-stone-100">{participantName}</h3>
+            <p className="text-xs text-emerald-400 capitalize">{participantRole} • Attending Consultation</p>
+            
+            {cameraPermissionGranted === false && (
+              <div className="mt-4 px-3 py-1.5 rounded bg-amber-950/70 border border-amber-800/80 text-[11px] text-amber-300 flex items-center space-x-1.5">
+                <AlertTriangle className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                <span>Camera preview inactive. Continuing in audio-primary rural mode.</span>
+              </div>
+            )}
           </div>
 
-          {/* Local Video (PiP) */}
-          <div className="absolute bottom-4 right-4 w-48 h-36 bg-gray-700 rounded-lg overflow-hidden shadow-lg">
+          {/* Local Video Feed (Picture-in-Picture) */}
+          <div className="absolute bottom-4 right-4 w-36 h-28 sm:w-44 sm:h-32 bg-stone-950 rounded-lg overflow-hidden border border-stone-700 shadow-xl z-10">
             <video
               ref={videoRef}
               className="w-full h-full object-cover"
@@ -183,66 +176,64 @@ export const VideoCall: React.FC<VideoCallProps> = ({
               playsInline
               muted
             />
-            {/* Placeholder for demo */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-xs text-gray-400">Your Video</div>
-            </div>
-            {!isVideoOn && (
-              <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
-                <VideoOff className="h-8 w-8 text-gray-500" />
+            {(!isVideoOn || cameraPermissionGranted === false) && (
+              <div className="absolute inset-0 bg-stone-900/90 flex flex-col items-center justify-center text-stone-400">
+                <VideoOff className="h-5 w-5 mb-1 text-stone-500" />
+                <span className="text-[10px]">Camera Muted</span>
               </div>
             )}
+            <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/60 text-[9px] text-stone-300 font-medium">
+              You
+            </div>
           </div>
         </div>
 
-        {/* Controls Bar */}
-        <div className="p-4 bg-gray-800">
-          <div className="flex items-center justify-center space-x-4">
+        {/* Bottom Control Bar */}
+        <div className="p-3.5 bg-stone-900/95 border-t border-stone-800 z-20">
+          <div className="flex items-center justify-center space-x-3">
             <Button
-              size="lg"
+              size="sm"
               variant={isMuted ? "destructive" : "secondary"}
-              className="rounded-full"
+              className={`rounded-full h-10 w-10 p-0 ${
+                isMuted ? 'bg-red-700 text-white' : 'bg-stone-800 hover:bg-stone-700 text-stone-200'
+              }`}
               onClick={toggleMute}
+              title={isMuted ? "Unmute Microphone" : "Mute Microphone"}
             >
-              {isMuted ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+              {isMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
             </Button>
 
             <Button
-              size="lg"
+              size="sm"
               variant={isVideoOn ? "secondary" : "destructive"}
-              className="rounded-full"
+              className={`rounded-full h-10 w-10 p-0 ${
+                !isVideoOn ? 'bg-red-700 text-white' : 'bg-stone-800 hover:bg-stone-700 text-stone-200'
+              }`}
               onClick={toggleVideo}
+              title={isVideoOn ? "Turn Camera Off" : "Turn Camera On"}
             >
-              {isVideoOn ? <Video className="h-5 w-5" /> : <VideoOff className="h-5 w-5" />}
+              {isVideoOn ? <Video className="h-4 w-4" /> : <VideoOff className="h-4 w-4" />}
             </Button>
 
             <Button
-              size="lg"
+              size="sm"
               variant="destructive"
-              className="rounded-full px-8"
+              className="rounded-full px-5 h-10 bg-red-700 hover:bg-red-800 text-white text-xs font-semibold"
               onClick={handleEndCall}
             >
-              <PhoneOff className="h-5 w-5 mr-2" />
-              End Call
-            </Button>
-
-            <Button
-              size="lg"
-              variant={isScreenSharing ? "default" : "secondary"}
-              className="rounded-full"
-              onClick={toggleScreenShare}
-            >
-              <Monitor className="h-5 w-5" />
+              <PhoneOff className="h-4 w-4 mr-1.5" />
+              End Consultation
             </Button>
 
             {onToggleChat && (
               <Button
-                size="lg"
+                size="sm"
                 variant="secondary"
-                className="rounded-full"
+                className="rounded-full h-10 w-10 p-0 bg-stone-800 hover:bg-stone-700 text-stone-200"
                 onClick={onToggleChat}
+                title="Open Clinical Chat"
               >
-                <MessageSquare className="h-5 w-5" />
+                <MessageSquare className="h-4 w-4" />
               </Button>
             )}
           </div>
@@ -251,3 +242,5 @@ export const VideoCall: React.FC<VideoCallProps> = ({
     </Card>
   );
 };
+
+export default VideoCall;

@@ -29,6 +29,8 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { storageService } from '@/services/storage';
 import { format } from 'date-fns';
 
 interface Medicine {
@@ -431,7 +433,7 @@ export const InventoryManagement: React.FC = () => {
                               <div className="flex items-center space-x-2">
                                 <span className="font-medium">{medicine.stock}</span>
                                 <span className="text-sm text-muted-foreground">/ {medicine.maxStock}</span>
-                                <Badge variant={stockStatus.color as any}>
+                                <Badge variant={stockStatus.color as 'default' | 'secondary' | 'destructive' | 'warning' | 'success'}>
                                   {stockStatus.label}
                                 </Badge>
                               </div>
@@ -445,7 +447,7 @@ export const InventoryManagement: React.FC = () => {
                             </div>
                           </td>
                           <td className="p-3">
-                            <Badge variant={expiryStatus.color as any}>
+                            <Badge variant={expiryStatus.color as 'default' | 'secondary' | 'destructive' | 'warning' | 'success'}>
                               {expiryStatus.label}
                             </Badge>
                           </td>
@@ -557,7 +559,7 @@ export const InventoryManagement: React.FC = () => {
                               </p>
                             </div>
                             <div className="flex items-center space-x-2">
-                              <Badge variant={expiryStatus.color as any}>
+                              <Badge variant={expiryStatus.color as 'default' | 'secondary' | 'destructive' | 'warning' | 'success'}>
                                 {expiryStatus.label}
                               </Badge>
                               <Button size="sm" variant="outline">

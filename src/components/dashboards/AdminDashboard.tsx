@@ -1,361 +1,359 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { Users, Activity, Building2, TrendingUp, Download, UserCheck, AlertCircle } from 'lucide-react';
+import { 
+  Users, 
+  Activity, 
+  Building2, 
+  TrendingUp, 
+  Download, 
+  UserCheck, 
+  AlertCircle, 
+  ShieldAlert, 
+  Calendar, 
+  RefreshCw,
+  Clock,
+  ShieldCheck
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { demoUsers, mockAnalytics } from '@/data/mockData';
+import { demoUsers } from '@/data/mockData';
+import { storageService } from '@/services/storage';
 import { useToast } from '@/hooks/use-toast';
+import { AuditEvent, Appointment, MedicineStock } from '@/types/medical';
+import { Layout } from '@/components/layout/Layout';
 
-const AdminDashboard = () => {
+export const AdminDashboard = () => {
   const { user, logout } = useAuth();
   const { toast } = useToast();
+
+  const [auditLogs, setAuditLogs] = useState<AuditEvent[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [inventory, setInventory] = useState<MedicineStock[]>([]);
+  const [realAnalytics, setRealAnalytics] = useState({
+    totalConsultations: 0,
+    pendingConsultations: 0,
+    confirmedConsultations: 0,
+    inStockCount: 0,
+    outOfStockCount: 0,
+    lowStockCount: 0,
+    totalInventoryItems: 0,
+    appointmentsCount: 0
+  });
+
+  const loadData = () => {
+    setAuditLogs(storageService.getAuditLogs());
+    setAppointments(storageService.getAppointments());
+    setInventory(storageService.getInventory());
+    setRealAnalytics(storageService.getRealAnalytics());
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const handleLogout = () => {
     logout();
     toast({
       title: "Logged Out",
-      description: "You have been successfully logged out.",
+      description: "Admin session ended.",
     });
   };
 
-  const exportCSV = () => {
+  const exportAuditCSV = () => {
+    if (auditLogs.length === 0) {
+      toast({
+        title: "No Audit Data",
+        description: "There are currently no recorded audit events to export.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const headers = ["Timestamp", "Actor ID", "Actor Name", "Role", "Action", "Resource Type", "Resource ID", "Details"];
+    const rows = auditLogs.map(l => [
+      `"${l.timestamp}"`,
+      `"${l.actorId}"`,
+      `"${l.actorName}"`,
+      `"${l.actorRole}"`,
+      `"${l.action}"`,
+      `"${l.resourceType}"`,
+      `"${l.resourceId}"`,
+      `"${l.details || ''}"`
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `HealthBridge_AuditTrail_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
     toast({
-      title: "Export Started",
-      description: "Downloading system analytics as CSV file...",
+      title: "Audit Log Exported",
+      description: `Downloaded ${auditLogs.length} audit events as CSV.`,
     });
   };
-
-  const COLORS = ['hsl(var(--primary))', 'hsl(var(--success))', 'hsl(var(--warning))', 'hsl(var(--emergency))', 'hsl(var(--accent))'];
-
-  const pieData = mockAnalytics.topMedicines.map((item, index) => ({
-    name: item.name,
-    value: item.requests,
-    color: COLORS[index % COLORS.length]
-  }));
 
   return (
-    <div className="px-4 md:px-6 lg:px-8 py-8 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
-        <div className="flex items-center gap-4">
-          <Badge variant="secondary" className="text-emergency">
-            {user?.name}
-          </Badge>
-          <Button variant="destructive" size="sm" onClick={handleLogout}>
-            Logout
-          </Button>
+    <Layout>
+      <div className="space-y-6">
+        {/* Top Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200">
+          <div>
+            <div className="flex items-center space-x-2">
+              <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Platform Operations & Oversight</h1>
+              <Badge variant="outline" className="text-[10px] text-emerald-800 border-emerald-700/50 bg-emerald-50">
+                Administrator
+              </Badge>
+            </div>
+            <p className="text-xs text-stone-500 mt-0.5">
+              Nabha Regional Telemedicine Pilot • System Metrics & Clinical Governance
+            </p>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Button variant="outline" size="sm" onClick={loadData} className="text-xs border-stone-300">
+              <RefreshCw className="h-3.5 w-3.5 mr-1" />
+              Refresh
+            </Button>
+            <Button 
+              size="sm" 
+              className="bg-emerald-800 hover:bg-emerald-900 text-white text-xs"
+              onClick={exportAuditCSV}
+            >
+              <Download className="h-3.5 w-3.5 mr-1" />
+              Export Audit Trail
+            </Button>
+          </div>
         </div>
-      </div>
 
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-        </TabsList>
+        {/* Real Metrics Overview Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card className="border-stone-200 bg-white shadow-sm">
+            <CardHeader className="p-3.5 pb-1">
+              <CardTitle className="text-xs font-semibold text-stone-500">Total Scheduled Visits</CardTitle>
+            </CardHeader>
+            <CardContent className="p-3.5 pt-0">
+              <p className="text-2xl font-bold text-stone-900">{realAnalytics.appointmentsCount}</p>
+              <p className="text-[11px] text-stone-500 mt-0.5">Across all 5 clinical departments</p>
+            </CardContent>
+          </Card>
 
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid md:grid-cols-4 gap-4">
-            <Card className="shadow-card">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Patients</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
+          <Card className="border-stone-200 bg-white shadow-sm">
+            <CardHeader className="p-3.5 pb-1">
+              <CardTitle className="text-xs font-semibold text-stone-500">Completed Consultations</CardTitle>
+            </CardHeader>
+            <CardContent className="p-3.5 pt-0">
+              <p className="text-2xl font-bold text-emerald-800">{realAnalytics.totalConsultations}</p>
+              <p className="text-[11px] text-stone-500 mt-0.5">With generated digital records</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-stone-200 bg-white shadow-sm">
+            <CardHeader className="p-3.5 pb-1">
+              <CardTitle className="text-xs font-semibold text-stone-500">Pending Review</CardTitle>
+            </CardHeader>
+            <CardContent className="p-3.5 pt-0">
+              <p className="text-2xl font-bold text-amber-700">{realAnalytics.pendingConsultations}</p>
+              <p className="text-[11px] text-stone-500 mt-0.5">Awaiting physician acceptance</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-stone-200 bg-white shadow-sm">
+            <CardHeader className="p-3.5 pb-1">
+              <CardTitle className="text-xs font-semibold text-stone-500">Dispensary Stock Alert</CardTitle>
+            </CardHeader>
+            <CardContent className="p-3.5 pt-0">
+              <p className="text-2xl font-bold text-red-700">
+                {realAnalytics.outOfStockCount + realAnalytics.lowStockCount}
+              </p>
+              <p className="text-[11px] text-stone-500 mt-0.5">
+                {realAnalytics.outOfStockCount} out of stock, {realAnalytics.lowStockCount} low
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tabbed Views */}
+        <Tabs defaultValue="audit" className="space-y-4">
+          <TabsList className="bg-stone-100 p-1 border border-stone-200">
+            <TabsTrigger value="audit" className="text-xs">Operational Audit Trail</TabsTrigger>
+            <TabsTrigger value="appointments" className="text-xs">Live Appointments ({appointments.length})</TabsTrigger>
+            <TabsTrigger value="inventory" className="text-xs">Dispensary Stock ({inventory.length})</TabsTrigger>
+            <TabsTrigger value="users" className="text-xs">Registered Accounts</TabsTrigger>
+          </TabsList>
+
+          {/* Audit Logs Content */}
+          <TabsContent value="audit" className="space-y-3">
+            <Card className="border-stone-200 bg-white shadow-sm">
+              <CardHeader className="p-4 pb-2 border-b border-stone-100">
+                <CardTitle className="text-sm font-bold text-stone-900 flex items-center justify-between">
+                  <span>Clinical & Administrative Event Log</span>
+                  <Badge variant="outline" className="text-[10px] text-stone-500">{auditLogs.length} Events</Badge>
+                </CardTitle>
+                <CardDescription className="text-xs text-stone-500">
+                  Immutable client-side log tracking state transitions, inventory updates, and clinical record generation.
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-success">{mockAnalytics.activePatients}</div>
-                <p className="text-xs text-muted-foreground">+8% from last month</p>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-card">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Doctors</CardTitle>
-                <UserCheck className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-primary">{mockAnalytics.activeDoctors}</div>
-                <p className="text-xs text-muted-foreground">+3 new this month</p>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-card">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Partner Pharmacies</CardTitle>
-                <Building2 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-warning">{mockAnalytics.totalPharmacies}</div>
-                <p className="text-xs text-muted-foreground">2 pending approval</p>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-card">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Consultations</CardTitle>
-                <Activity className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-emergency">{mockAnalytics.totalConsultations}</div>
-                <p className="text-xs text-muted-foreground">This month</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <Card className="shadow-card">
-              <CardHeader>
-                <CardTitle>Weekly Consultations</CardTitle>
-                <CardDescription>Number of consultations per day this week</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={mockAnalytics.weeklyConsultations}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="day" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="count" fill="hsl(var(--primary))" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-card">
-              <CardHeader>
-                <CardTitle>Top Requested Medicines</CardTitle>
-                <CardDescription>Most requested medicines this month</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+              <CardContent className="p-0">
+                {auditLogs.length === 0 ? (
+                  <div className="p-8 text-center text-xs text-stone-400">
+                    No administrative audit events recorded yet. Perform actions across doctor/patient tabs to view log entries.
+                  </div>
+                ) : (
+                  <Table className="text-xs">
+                    <TableHeader className="bg-stone-50">
+                      <TableRow>
+                        <TableHead className="py-2.5">Time</TableHead>
+                        <TableHead className="py-2.5">Actor</TableHead>
+                        <TableHead className="py-2.5">Role</TableHead>
+                        <TableHead className="py-2.5">Action</TableHead>
+                        <TableHead className="py-2.5">Details</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {auditLogs.map((log) => (
+                        <TableRow key={log.id} className="hover:bg-stone-50/50">
+                          <TableCell className="py-2 text-[11px] text-stone-500">
+                            {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                          </TableCell>
+                          <TableCell className="py-2 font-medium text-stone-800">{log.actorName}</TableCell>
+                          <TableCell className="py-2">
+                            <Badge variant="outline" className="text-[10px] uppercase">{log.actorRole}</Badge>
+                          </TableCell>
+                          <TableCell className="py-2 font-mono text-[11px] text-emerald-800 font-semibold">{log.action}</TableCell>
+                          <TableCell className="py-2 text-stone-600 max-w-xs truncate">{log.details || '—'}</TableCell>
+                        </TableRow>
                       ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
-          </div>
+          </TabsContent>
 
-          <Card className="shadow-card">
-            <CardHeader>
-              <CardTitle>System Health</CardTitle>
-              <CardDescription>Overall platform performance metrics</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-muted rounded-lg">
-                  <div className="text-2xl font-bold text-success">{mockAnalytics.fulfillmentRate}%</div>
-                  <div className="text-sm text-muted-foreground">Request Fulfillment Rate</div>
-                </div>
-                <div className="text-center p-4 bg-muted rounded-lg">
-                  <div className="text-2xl font-bold text-primary">98.5%</div>
-                  <div className="text-sm text-muted-foreground">System Uptime</div>
-                </div>
-                <div className="text-center p-4 bg-muted rounded-lg">
-                  <div className="text-2xl font-bold text-warning">4.8/5</div>
-                  <div className="text-sm text-muted-foreground">User Satisfaction</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="users" className="space-y-4">
-          <Card className="shadow-card">
-            <CardHeader>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>Manage all platform users</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {demoUsers.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">{user.name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
-                        <Badge variant={
-                          user.role === 'doctor' ? 'default' :
-                          user.role === 'patient' ? 'secondary' :
-                          user.role === 'pharmacy' ? 'outline' : 'destructive'
-                        }>
-                          {user.role}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{user.location}</TableCell>
-                      <TableCell>
-                        <Badge variant="default">Active</Badge>
-                      </TableCell>
+          {/* Appointments View */}
+          <TabsContent value="appointments" className="space-y-3">
+            <Card className="border-stone-200 bg-white shadow-sm">
+              <CardContent className="p-0">
+                <Table className="text-xs">
+                  <TableHeader className="bg-stone-50">
+                    <TableRow>
+                      <TableHead>Ref ID</TableHead>
+                      <TableHead>Patient</TableHead>
+                      <TableHead>Attending Doctor</TableHead>
+                      <TableHead>Date & Time</TableHead>
+                      <TableHead>Mode</TableHead>
+                      <TableHead>Status</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="analytics" className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            <Card className="shadow-card">
-              <CardHeader>
-                <CardTitle>Platform Growth</CardTitle>
-                <CardDescription>Monthly user registration trends</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">New Patients</span>
-                    <span className="font-medium text-success">+185 this month</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">New Doctors</span>
-                    <span className="font-medium text-primary">+12 this month</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">New Pharmacies</span>
-                    <span className="font-medium text-warning">+5 this month</span>
-                  </div>
-                </div>
+                  </TableHeader>
+                  <TableBody>
+                    {appointments.map((apt) => (
+                      <TableRow key={apt.id}>
+                        <TableCell className="font-mono text-[11px] text-stone-500">{apt.id}</TableCell>
+                        <TableCell className="font-medium text-stone-900">{apt.patientName}</TableCell>
+                        <TableCell className="text-stone-700">{apt.doctorName} ({apt.specialty})</TableCell>
+                        <TableCell className="text-stone-600">{apt.date} • {apt.time}</TableCell>
+                        <TableCell className="capitalize text-stone-600">{apt.type}</TableCell>
+                        <TableCell>
+                          <Badge variant={
+                            ['CONFIRMED', 'approved'].includes(apt.status) ? 'success' :
+                            ['REQUESTED', 'pending'].includes(apt.status) ? 'warning' :
+                            apt.status === 'COMPLETED' ? 'secondary' : 'destructive'
+                          } className="text-[10px]">
+                            {apt.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
+          </TabsContent>
 
-            <Card className="shadow-card">
-              <CardHeader>
-                <CardTitle>Revenue Analytics</CardTitle>
-                <CardDescription>Platform financial metrics</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Monthly Revenue</span>
-                    <span className="font-medium text-success">₹2,45,680</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Consultation Fees</span>
-                    <span className="font-medium text-primary">₹1,85,400</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Pharmacy Commission</span>
-                    <span className="font-medium text-warning">₹60,280</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card className="shadow-card">
-            <CardHeader>
-              <CardTitle>Top Medicines by Demand</CardTitle>
-              <CardDescription>Most requested medicines across the platform</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Medicine</TableHead>
-                    <TableHead>Total Requests</TableHead>
-                    <TableHead>Success Rate</TableHead>
-                    <TableHead>Avg. Price</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {mockAnalytics.topMedicines.map((medicine, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{medicine.name}</TableCell>
-                      <TableCell>{medicine.requests}</TableCell>
-                      <TableCell>
-                        <Badge variant="default">{85 + index * 2}%</Badge>
-                      </TableCell>
-                      <TableCell>₹{25 + index * 15}</TableCell>
+          {/* Dispensary Stock View */}
+          <TabsContent value="inventory" className="space-y-3">
+            <Card className="border-stone-200 bg-white shadow-sm">
+              <CardContent className="p-0">
+                <Table className="text-xs">
+                  <TableHeader className="bg-stone-50">
+                    <TableRow>
+                      <TableHead>Medicine Name</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Current Stock</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Subsidized Price</TableHead>
+                      <TableHead>Expiry Date</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  </TableHeader>
+                  <TableBody>
+                    {inventory.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="font-semibold text-stone-900">{item.name}</TableCell>
+                        <TableCell className="text-stone-600">{item.category}</TableCell>
+                        <TableCell>
+                          <Badge variant={
+                            item.stock === 0 ? 'destructive' :
+                            item.stock <= (item.minStock || 25) ? 'warning' : 'success'
+                          } className="text-[10px]">
+                            {item.stock} Units
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-stone-600">{item.rackNumber || 'Dispensary'}</TableCell>
+                        <TableCell className="font-medium text-stone-800">₹{item.price}</TableCell>
+                        <TableCell className="text-stone-500 text-[11px]">{item.expiryDate}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        <TabsContent value="reports" className="space-y-4">
-          <Card className="shadow-card">
-            <CardHeader>
-              <CardTitle>Generate Reports</CardTitle>
-              <CardDescription>Export platform data and analytics</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-3 gap-4">
-                <Button onClick={exportCSV} variant="medical" className="h-20 flex-col space-y-2">
-                  <Download className="h-6 w-6" />
-                  <span>User Report</span>
-                </Button>
-                <Button onClick={exportCSV} variant="outline" className="h-20 flex-col space-y-2">
-                  <TrendingUp className="h-6 w-6" />
-                  <span>Analytics Report</span>
-                </Button>
-                <Button onClick={exportCSV} variant="success" className="h-20 flex-col space-y-2">
-                  <Activity className="h-6 w-6" />
-                  <span>Consultation Report</span>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-card">
-            <CardHeader>
-              <CardTitle>System Alerts</CardTitle>
-              <CardDescription>Important notifications and issues</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="border border-border rounded-lg p-4 space-y-2">
-                <div className="flex items-center space-x-2">
-                  <AlertCircle className="h-4 w-4 text-warning" />
-                  <span className="font-medium">Low Medicine Stock Alert</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  3 pharmacies reported low stock for Azithromycin. Consider reaching out to suppliers.
-                </p>
-              </div>
-              
-              <div className="border border-border rounded-lg p-4 space-y-2">
-                <div className="flex items-center space-x-2">
-                  <AlertCircle className="h-4 w-4 text-success" />
-                  <span className="font-medium">System Performance Normal</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  All systems are running smoothly. No issues detected in the last 24 hours.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+          {/* Accounts View */}
+          <TabsContent value="users" className="space-y-3">
+            <Card className="border-stone-200 bg-white shadow-sm">
+              <CardContent className="p-0">
+                <Table className="text-xs">
+                  <TableHeader className="bg-stone-50">
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Assigned Region</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {demoUsers.map((u) => (
+                      <TableRow key={u.id}>
+                        <TableCell className="font-medium text-stone-900">{u.name}</TableCell>
+                        <TableCell className="text-stone-600">{u.email}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="text-[10px] uppercase">{u.role}</Badge>
+                        </TableCell>
+                        <TableCell className="text-stone-600">{u.location}</TableCell>
+                        <TableCell>
+                          <Badge variant="success" className="text-[10px]">Active</Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </Layout>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -47,7 +47,8 @@ import {
   ClipboardList
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { mockMedicineStock } from '@/data/mockData';
+import { storageService } from '@/services/storage';
+import { MedicineStock } from '@/types/medical';
 import { useToast } from '@/hooks/use-toast';
 import { InventoryManagement } from '@/components/pharmacy/InventoryManagement';
 
@@ -59,7 +60,16 @@ const PharmacyDashboard = () => {
   const [showUpdateInventoryCard, setShowUpdateInventoryCard] = useState(false);
   const [showLowStockAlert, setShowLowStockAlert] = useState(false);
 
-  const pharmacyStock = mockMedicineStock.filter(med => med.pharmacyId === user?.id);
+  const [pharmacyStock, setPharmacyStock] = useState<MedicineStock[]>(() => {
+    const stock = storageService.getInventory(user?.id);
+    return stock.length > 0 ? stock : storageService.getInventory();
+  });
+
+  useEffect(() => {
+    const stock = storageService.getInventory(user?.id);
+    setPharmacyStock(stock.length > 0 ? stock : storageService.getInventory());
+  }, [user?.id, activeTab]);
+
   const lowStockCount = pharmacyStock.filter(med => med.stock < 10).length;
   const outOfStockCount = pharmacyStock.filter(med => med.stock === 0).length;
   const totalMedicines = pharmacyStock.length;

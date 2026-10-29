@@ -40,7 +40,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMessaging } from '@/contexts/MessagingContext';
-import { mockAppointments } from '@/data/mockData';
+import { storageService } from '@/services/storage';
+import { Appointment } from '@/types/medical';
 import { useToast } from '@/hooks/use-toast';
 import { ChatInterface } from '@/components/chat/ChatInterface';
 import { ConversationsList } from '@/components/chat/ConversationsList';
@@ -62,7 +63,19 @@ const DoctorDashboard = () => {
     notes: ''
   });
 
-  const doctorAppointments = mockAppointments.filter(apt => apt.doctorId === user?.id);
+  const [doctorAppointments, setDoctorAppointments] = useState<Appointment[]>(() => {
+    return user?.id ? storageService.getAppointments({ doctorId: user.id }) : [];
+  });
+
+  const reloadDoctorAppointments = () => {
+    if (user?.id) {
+      setDoctorAppointments(storageService.getAppointments({ doctorId: user.id }));
+    }
+  };
+
+  React.useEffect(() => {
+    reloadDoctorAppointments();
+  }, [user?.id]);
   const pendingCount = doctorAppointments.filter(apt => apt.status === 'pending').length;
   const approvedCount = doctorAppointments.filter(apt => apt.status === 'approved').length;
 

@@ -3,7 +3,7 @@ export type UserRole = 'patient' | 'doctor' | 'pharmacy' | 'admin';
 export interface User {
   id: string;
   email: string;
-  password: string;
+  password?: string;
   name: string;
   role: UserRole;
   avatar?: string;
@@ -15,6 +15,7 @@ export interface User {
 export interface AuthContext {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
+  register: (data: { name: string; email: string; password: string; role?: UserRole; phone?: string; location?: string }) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
 }

@@ -1,210 +1,96 @@
 # HealthBridge: Telemedicine Platform for Rural Healthcare Access
 
-## Abstract
+HealthBridge is a digital health platform designed to improve healthcare access in rural communities, with initial focus on **Nabha and its 173 surrounding villages in Patiala district, Punjab, India**.
 
-HealthBridge is a comprehensive telemedicine platform designed to address critical healthcare accessibility challenges in rural regions, with initial deployment targeting Nabha and its surrounding 173 villages in Punjab, India. The platform leverages modern web technologies to provide remote medical consultations, digital health records, pharmacy inventory management, and AI-powered symptom assessment, optimized for low-bandwidth rural environments.
-
-## Problem Statement
-
-### Healthcare Infrastructure Challenges
-
-The rural healthcare system in Nabha faces severe operational constraints that directly impact patient outcomes and community well-being:
-
-- **Critical Staffing Shortages**: The local Civil Hospital operates with only 11 doctors against 23 sanctioned positions, representing a 52% vacancy rate
-- **Geographic Accessibility Issues**: Patients from 173 surrounding villages must undertake extensive travel, often resulting in lost work hours and income
-- **Resource Limitations**: Frequent unavailability of medical specialists and consistent medicine stockouts
-- **Infrastructure Deficiencies**: Poor road conditions and inadequate sanitation facilities exacerbate access challenges
-
-### Socioeconomic Impact
-
-These healthcare barriers disproportionately affect vulnerable populations:
-
-- **Daily-wage Workers**: Income loss due to medical travel creates significant financial strain
-- **Agricultural Communities**: Farmers face productivity losses when seeking medical care
-- **Preventable Complications**: Delayed treatment leads to worsening of otherwise manageable conditions
-- **Community Well-being**: Overall decline in rural health outcomes and quality of life
-
-## Solution Overview
-
-HealthBridge addresses these challenges through a comprehensive digital health ecosystem that provides:
-
-### Core Functionality
-
-1. **Remote Medical Consultations**
-   - High-quality video conferencing optimized for rural internet connectivity
-   - Secure patient-doctor communication channels
-   - Appointment scheduling and management system
-
-2. **Digital Health Records**
-   - Offline-accessible patient medical histories
-   - Secure data storage with privacy compliance
-   - Cross-platform synchronization capabilities
-
-3. **Pharmacy Integration**
-   - Real-time medicine availability tracking
-   - Local pharmacy stock monitoring
-   - Prescription fulfillment coordination
-
-4. **AI-Powered Symptom Assessment**
-   - Intelligent symptom analysis optimized for low-bandwidth environments
-   - Preliminary health screening capabilities
-   - Triage recommendations for rural patients
-
-5. **Multilingual Support**
-   - Local language interfaces for improved accessibility
-   - Cultural context integration
-   - Community-specific health information
-
-## Technical Architecture
-
-### Technology Stack
-
-- **Frontend Framework**: React 18.3.1 with TypeScript 5.8.3
-- **Build System**: Vite 5.4.19 for optimized development and production builds
-- **UI Components**: Radix UI primitives with Tailwind CSS for responsive design
-- **State Management**: React Query for server state management
-- **Form Handling**: React Hook Form with Zod validation
-- **Routing**: React Router DOM for client-side navigation
-- **Styling**: Tailwind CSS with custom design system components
-
-### System Requirements
-
-- **Minimum Bandwidth**: Optimized for rural internet connectivity (2G/3G networks)
-- **Device Compatibility**: Responsive design supporting mobile, tablet, and desktop devices
-- **Offline Capabilities**: Progressive Web App features for limited connectivity scenarios
-- **Security**: End-to-end encryption for patient data and communications
-
-## Implementation Status
-
-### Current Development Phase
-
-The platform is currently in active development with the following components implemented:
-
-- **Authentication System**: Multi-role user management (Patients, Doctors, Pharmacists, Administrators)
-- **Dashboard Interfaces**: Role-specific dashboards for different user types
-- **UI Component Library**: Comprehensive design system with accessibility features
-- **Routing Infrastructure**: Client-side navigation with protected routes
-
-### Planned Features
-
-- **Video Consultation Module**: Integration with WebRTC for medical consultations
-- **Health Records Database**: Secure patient data management system
-- **Pharmacy API**: Real-time inventory tracking integration
-- **AI Symptom Checker**: Machine learning-based health assessment
-- **Offline Synchronization**: Local data storage with cloud synchronization
-
-## Stakeholder Analysis
-
-### Primary Beneficiaries
-
-- **Rural Patients**: Improved access to medical care without extensive travel
-- **Healthcare Providers**: Enhanced patient management and consultation capabilities
-- **Local Pharmacies**: Streamlined inventory management and patient coordination
-- **Government Health Departments**: Data-driven healthcare planning and resource allocation
-
-### Secondary Stakeholders
-
-- **Community Organizations**: Improved public health outcomes
-- **Educational Institutions**: Training platform for healthcare professionals
-- **Technology Partners**: Scalable solution for other rural regions
-
-## Expected Outcomes
-
-### Immediate Impact (6-12 months)
-
-- **Reduced Travel Burden**: 60-80% decrease in unnecessary medical travel for rural patients
-- **Improved Access**: 24/7 availability of preliminary health assessments
-- **Enhanced Efficiency**: Streamlined appointment scheduling and medical record management
-
-### Long-term Benefits (1-3 years)
-
-- **Scalability**: Platform expansion to other rural regions across India
-- **Data Analytics**: Evidence-based healthcare policy development
-- **Community Health**: Measurable improvement in rural health outcomes
-- **Economic Impact**: Reduced financial strain on rural families
-
-## Deployment Strategy
-
-### Phase 1: Nabha Pilot (Months 1-6)
-
-- Initial platform deployment and testing
-- Healthcare provider onboarding and training
-- Patient registration and system familiarization
-- Performance optimization for rural connectivity
-
-### Phase 2: Regional Expansion (Months 7-18)
-
-- Platform scaling to neighboring rural areas
-- Additional language support and cultural adaptations
-- Advanced feature implementation and user feedback integration
-
-### Phase 3: National Scaling (Months 19-36)
-
-- Platform adaptation for diverse rural regions
-- Government partnership and policy integration
-- Research publication and knowledge sharing
-
-## Research and Development
-
-### Academic Contributions
-
-This project contributes to several research areas:
-
-- **Digital Health Equity**: Addressing healthcare accessibility gaps in rural communities
-- **Telemedicine Implementation**: Best practices for low-resource healthcare environments
-- **Rural Technology Adoption**: User experience design for underserved populations
-- **Healthcare Policy**: Evidence-based approaches to rural healthcare delivery
-
-### Future Research Directions
-
-- **Machine Learning Applications**: Advanced diagnostic support systems
-- **Blockchain Integration**: Secure and transparent health record management
-- **IoT Integration**: Remote patient monitoring capabilities
-- **Cultural Adaptation Studies**: Healthcare technology adoption across diverse communities
-
-## Contributing
-
-### Development Guidelines
-
-We welcome contributions from researchers, developers, and healthcare professionals. Please refer to our contributing guidelines for:
-
-- Code quality standards and testing requirements
-- Documentation and accessibility requirements
-- Security and privacy compliance
-- Community engagement and feedback processes
-
-### Research Collaboration
-
-For academic and research partnerships, please contact our research team to discuss:
-
-- Collaborative research opportunities
-- Data sharing and analysis partnerships
-- Clinical trial and evaluation studies
-- Publication and presentation opportunities
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contact Information
-
-- **Project Lead**: [Contact Information]
-- **Technical Support**: [Support Email]
-- **Research Inquiries**: [Research Email]
-- **Partnership Opportunities**: [Partnership Email]
-
-## Acknowledgments
-
-We extend our gratitude to:
-
-- The healthcare professionals and patients in Nabha for their valuable insights
-- The Punjab Health Department for their support and guidance
-- The open-source community for the technologies that make this platform possible
-- Academic institutions and research partners contributing to this initiative
+The application provides remote clinical consultations, appointment lifecycle management, localized health records, community pharmacy inventory tracking, and safety-first symptom triage—tailored for low-bandwidth rural environments.
 
 ---
 
-*HealthBridge: Bridging the gap between rural communities and quality healthcare through innovative technology solutions.*
+## Quick Start & Local Development
 
-*Last Updated: [Current Date]*
-*Version: 1.0.0*
+### Prerequisites
+- **Node.js**: v18.0.0 or higher (v20+ recommended)
+- **Package Manager**: npm
+
+### Installation & Run
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Run local development server
+npm run dev
+
+# 3. Open in browser
+# http://localhost:8080 (or the port Vite outputs)
+```
+
+### Verification & Quality Commands
+
+```bash
+# Execute automated test suite (node:test)
+npm test
+
+# Run ESLint validation
+npm run lint
+
+# Compile production bundle and typecheck
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+---
+
+## Pre-Configured Demo Accounts
+
+For evaluation and testing, four pre-configured roles are available out-of-the-box. All accounts use the standard password: `12345`
+
+| Role | Email | Password | Intended Capabilities |
+| :--- | :--- | :---: | :--- |
+| **Patient** | `patient@demo.com` | `12345` | Consultation booking, symptom screening, personal records, medicine search |
+| **Doctor** | `doctor@demo.com` | `12345` | Consultation room, appointment status updates, prescription/record creation |
+| **Pharmacist** | `pharmacy@demo.com` | `12345` | Inventory management, medicine restocking, stockout alerts |
+| **Administrator** | `admin@demo.com` | `12345` | System telemetry, clinical audit logs, provider management, appointments |
+
+> **Security Note**: Public registration on the landing page is strictly bounded to the `patient` role. Administrative and clinical provider roles cannot be self-assigned via public registration.
+
+---
+
+## System Architecture
+
+- **Frontend Core**: React 18.3.1 with TypeScript 5.8.3
+- **Build System**: Vite 5.4.21
+- **Styling & UI**: Tailwind CSS with Radix UI accessible primitives, custom warm-ivory / deep forest green palette
+- **Data Repository**: `src/services/storage.ts` provides a typed, persistent storage layer with deterministic seed data, conflict protection, appointment state machines, and RBAC filters.
+- **Routing**: `react-router-dom` with client-side SPA route rewrites configured in `vercel.json`.
+- **Media Consultation**: Local `getUserMedia` preview with permission-denial handling and fallback to clinical audio/chat guidance.
+- **Emergency Protocols**: Safety triage with red-flag detection linking directly to Indian national emergency services (**112** for emergency, **108** for ambulance).
+
+---
+
+## Project Documentation
+
+Detailed technical documentation is available in the `docs/` directory:
+
+- [docs/IMPLEMENTATION_AUDIT.md](docs/IMPLEMENTATION_AUDIT.md) — Comprehensive technical audit, feature gap analysis, and implementation roadmap.
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — Deployment instructions for Vercel, Netlify, and Nginx, including SPA rewrites and HTTP headers.
+- [docs/SECURITY_AND_PRIVACY.md](docs/SECURITY_AND_PRIVACY.md) — Role-based access control (RBAC), data governance, audit logging, and anti-escalation safeguards.
+- [docs/TESTING.md](docs/TESTING.md) — Automated test suite report, verification checklists, and QA results.
+
+---
+
+## Problem Statement & Context
+
+### Healthcare Access in Nabha, Punjab
+- **Staffing Vacancies**: The local Civil Hospital in Nabha operates with limited medical specialists across clinical departments.
+- **Travel Overhead**: Patients traveling from rural villages incur travel costs and daily wage loss.
+- **Pharmacy Stockouts**: Patients frequently travel to town only to find critical medications out of stock.
+- **HealthBridge Impact**: Enables patients to check medicine availability before traveling, book remote follow-ups, and receive triage recommendations.
+
+---
+
+## License
+
+This project is licensed under the MIT License.

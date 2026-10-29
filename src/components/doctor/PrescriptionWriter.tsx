@@ -33,11 +33,27 @@ interface Medicine {
   instructions?: string;
 }
 
+export interface PrescriptionData {
+  id: string;
+  patientName: string;
+  patientId?: string;
+  date: string;
+  diagnosis: string;
+  symptoms: string[];
+  medicines: Medicine[];
+  tests: string[];
+  advice: string;
+  followUp: string;
+  doctorName: string;
+  doctorReg: string;
+  hospitalName: string;
+}
+
 interface PrescriptionWriterProps {
   patientName?: string;
   patientId?: string;
-  onSave?: (prescription: any) => void;
-  onSend?: (prescription: any) => void;
+  onSave?: (prescription: PrescriptionData) => void;
+  onSend?: (prescription: PrescriptionData) => void;
 }
 
 export const PrescriptionWriter: React.FC<PrescriptionWriterProps> = ({

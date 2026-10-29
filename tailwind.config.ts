@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
 	darkMode: ["class"],
@@ -18,6 +19,17 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: [
+					'Plus Jakarta Sans',
+					'-apple-system',
+					'BlinkMacSystemFont',
+					'Segoe UI',
+					'Roboto',
+					'sans-serif'
+				],
+				serif: ['Newsreader', 'Georgia', 'serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -81,16 +93,6 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
-			backgroundImage: {
-				'gradient-primary': 'var(--gradient-primary)',
-				'gradient-health': 'var(--gradient-health)',
-				'gradient-subtle': 'var(--gradient-subtle)'
-			},
-			boxShadow: {
-				'medical': 'var(--shadow-medical)',
-				'card': 'var(--shadow-card)',
-				'glow': 'var(--shadow-glow)'
-			},
 			keyframes: {
 				'accordion-down': {
 					from: {
@@ -110,10 +112,12 @@ export default {
 				},
 				'pulse-glow': {
 					'0%, 100%': {
-						boxShadow: '0 0 20px hsl(var(--primary-glow) / 0.3)'
+						opacity: '1',
+						transform: 'scale(1)'
 					},
 					'50%': {
-						boxShadow: '0 0 30px hsl(var(--primary-glow) / 0.5)'
+						opacity: '0.8',
+						transform: 'scale(1.05)'
 					}
 				},
 				'slide-up': {
@@ -135,5 +139,5 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [tailwindcssAnimate],
 } satisfies Config;
