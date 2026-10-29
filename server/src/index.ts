@@ -49,7 +49,7 @@ if (process.env.NODE_ENV !== 'test') {
 setupWebRTCSignaling(io);
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (req: express.Request, res: express.Response) => {
   res.json({
     status: 'healthy',
     service: 'HealthBridge Telemedicine API',
@@ -66,7 +66,7 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/admin', adminRoutes);
 
 // 404 handler
-app.use((req, res) => {
+app.use((req: express.Request, res: express.Response) => {
   res.status(404).json({
     success: false,
     message: `Endpoint not found: ${req.method} ${req.originalUrl}`

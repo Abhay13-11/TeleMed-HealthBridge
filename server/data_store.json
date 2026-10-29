@@ -80,9 +80,53 @@
       "phone": "",
       "location": "Nabha, Punjab",
       "createdAt": "2026-10-29T17:26:36.243Z"
+    },
+    {
+      "id": "usr-1793296060819",
+      "name": "Harpreet Kaur",
+      "email": "test-patient-1793296060760@nabha.in",
+      "password": "$2a$10$1LsEAkgrf4Ydwpce606h/egZvZr87/srof13JxRihKvCXCsiJSYO6",
+      "role": "patient",
+      "phone": "",
+      "location": "Nabha, Punjab",
+      "createdAt": "2026-10-29T17:47:40.820Z"
     }
   ],
   "appointments": [
+    {
+      "id": "apt-1793296060889",
+      "patientId": "1",
+      "patientName": "Krishna",
+      "doctorId": "2",
+      "doctorName": "Dr. Rachit Kumar",
+      "specialty": "General Medicine",
+      "date": "2026-12-060886",
+      "time": "11:00 AM",
+      "type": "video",
+      "status": "CONFIRMED",
+      "symptoms": "Mild joint stiffness",
+      "createdAt": "2026-10-29T17:47:40.889Z",
+      "updatedAt": "2026-10-29T17:47:40.966Z",
+      "auditLog": [
+        {
+          "timestamp": "2026-10-29T17:47:40.889Z",
+          "actorId": "1",
+          "actorName": "Krishna",
+          "actorRole": "patient",
+          "action": "REQUESTED",
+          "details": "Appointment request submitted by patient"
+        },
+        {
+          "timestamp": "2026-10-29T17:47:40.966Z",
+          "actorId": "2",
+          "actorName": "Dr. Rachit Kumar",
+          "actorRole": "doctor",
+          "action": "CONFIRMED",
+          "details": "Confirmed for Video Room 1"
+        }
+      ],
+      "notes": "Confirmed for Video Room 1"
+    },
     {
       "id": "apt-1793294796310",
       "patientId": "1",
@@ -230,7 +274,7 @@
       "rackNumber": "A-12",
       "expiryDate": "2026-06-30",
       "requiresPrescription": false,
-      "lastUpdated": "2026-10-29T17:26:36.512Z"
+      "lastUpdated": "2026-10-29T17:47:41.109Z"
     },
     {
       "id": "stock-2",
@@ -329,6 +373,17 @@
     }
   ],
   "auditLogs": [
+    {
+      "id": "log-1793296061109",
+      "timestamp": "2026-10-29T17:47:41.109Z",
+      "actorId": "3",
+      "actorName": "Nabha Rural Health Pharmacy",
+      "actorRole": "pharmacy",
+      "action": "STOCK_UPDATED",
+      "entityType": "inventory",
+      "entityId": "stock-1",
+      "details": "Paracetamol 500mg stock updated from 0 to 0 units (mode: adjust)"
+    },
     {
       "id": "log-1793294796512",
       "timestamp": "2026-10-29T17:26:36.512Z",
